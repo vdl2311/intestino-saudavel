@@ -75,12 +75,12 @@ function SalesPage() {
 
       {/* Hero Section */}
       <div className="py-[60px] bg-white">
-        <div className="max-w-[680px] mx-auto px-6 text-center">
+        <div className="max-w-[900px] mx-auto px-6 text-center">
           <p className="text-[#16a34a] font-sans font-bold text-[14px] uppercase tracking-widest mb-4">
             O SEGREDO DE BAMA
           </p>
-          <h1 className="text-[clamp(28px,5vw,40px)] leading-[1.2] mb-[25px] font-extrabold text-[#111]">
-            Por que estes centenários mantêm um <span className="text-[#b91c1c]">"intestino de bebê"</span> enquanto as fibras transformam sua barriga em um bloco de cimento.
+          <h1 className="headline-cb">
+            <span className="red-text">PARE de comer fibras:</span> O "Ritual de Bama" de 30 segundos que dissolve a cola tóxica do seu cólon e devolve um <span className="highlight-yellow">Intestino de Bebê.</span>
           </h1>
           <p className="text-[20px] mb-[40px] text-[#444] leading-relaxed">
             Seu corpo está apenas esperando as instruções certas para voltar a funcionar no "piloto automático" — mais leve do que você se sente hoje.
