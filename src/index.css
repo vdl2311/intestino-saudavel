@@ -87,8 +87,8 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 85px; /* Altura aumentada para garantir bloqueio total da barra */
-    z-index: 100; /* Z-index muito alto para garantir que fique acima do iframe */
-    background: rgba(0, 0, 0, 0.01); /* Fundo quase invisível para garantir captura de cliques */
-    pointer-events: auto; /* Garante que capture todos os cliques */
+    height: 20%; /* Cobre apenas a parte inferior onde fica a barra de progresso */
+    z-index: 10; /* Acima do iframe */
+    background: rgba(0, 0, 0, 0); /* Totalmente transparente */
+    pointer-events: auto; /* Captura cliques na barra */
 }

@@ -99,11 +99,10 @@ function SalesPage() {
             <iframe 
               ref={videoRef}
               id="bunny-video" 
-              src="https://iframe.mediadelivery.net/embed/628378/69d7a3d3-ca48-4560-b5b4-bccbe6aff1fc?autoplay=true&muted=true&loop=false&preload=true&controls=false&disableSeeking=true&blockSeeking=true" 
+              src="https://iframe.mediadelivery.net/embed/628378/69d7a3d3-ca48-4560-b5b4-bccbe6aff1fc?autoplay=true&muted=true&loop=false&preload=true&controls=false&disableSeeking=true&blockSeeking=true&playsinline=true" 
               loading="lazy" 
               style={{ border: 0, position: 'absolute', top: 0, height: '100%', width: '100%' }} 
-              allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" 
-              allowFullScreen={true}
+              allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; clipboard-write;" 
             ></iframe>
 
             <div id="video-guard" onContextMenu={(e) => e.preventDefault()} onDragStart={(e) => e.preventDefault()} onMouseDown={(e) => e.preventDefault()} onMouseMove={(e) => e.preventDefault()} onMouseUp={(e) => e.preventDefault()} onPointerDown={(e) => e.preventDefault()} onPointerMove={(e) => e.preventDefault()} onPointerUp={(e) => e.preventDefault()} onClick={(e) => e.stopPropagation()} onDoubleClick={(e) => e.stopPropagation()} onTouchStart={(e) => e.preventDefault()} onTouchMove={(e) => e.preventDefault()} onTouchEnd={(e) => e.preventDefault()}></div>
