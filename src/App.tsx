@@ -76,15 +76,21 @@ function SalesPage() {
       {/* Hero Section */}
       <div className="py-[60px] bg-white">
         <div className="max-w-[900px] mx-auto px-6 text-center">
-          <p className="text-[#16a34a] font-sans font-bold text-[14px] uppercase tracking-widest mb-4">
-            O SEGREDO DE BAMA
-          </p>
-          <h1 className="headline-cb">
-            <span className="red-text">PARE de comer fibras:</span> O "Ritual de Bama" de 30 segundos que dissolve a cola tóxica do seu cólon e devolve um <span className="highlight-yellow">Intestino de Bebê.</span>
-          </h1>
-          <p className="text-[20px] mb-[40px] text-[#444] leading-relaxed">
-            Seu corpo está apenas esperando as instruções certas para voltar a funcionar no "piloto automático" — mais leve do que você se sente hoje.
-          </p>
+          <div style={{ textAlign: 'center', fontFamily: "'Helvetica', 'Arial', sans-serif", maxWidth: '900px', margin: '0 auto', padding: '20px' }}>
+            <h3 style={{ color: '#CC0000', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '10px', textTransform: 'uppercase' }}>
+              A VERDADE SOBRE AS FIBRAS
+            </h3>
+            <h2 style={{ color: '#1a1a1a', fontSize: '2rem', fontWeight: 800, lineHeight: 1.2, marginBottom: '20px' }}>
+              Por que elas pararam de funcionar para você?
+            </h2>
+            <p style={{ color: '#444', fontSize: '1.4rem', lineHeight: 1.5, marginBottom: '25px' }}>
+              Entenda como o <span style={{ backgroundColor: '#ffff00', fontWeight: 'bold' }}>"Código de Bama"</span> de 30 segundos atua na limpeza profunda do seu sistema, removendo o que te impede de ter um ritmo natural e leve.
+            </p>
+            <h4 style={{ color: '#000', fontSize: '1.3rem', fontWeight: 600, borderTop: '1px dashed #ccc', borderBottom: '1px dashed #ccc', padding: '15px 0' }}>
+              Menos peso, mais energia e um corpo que obedece aos seus comandos. <br />
+              <span style={{ color: '#CC0000' }}>Assista à apresentação e destrave seu corpo.</span>
+            </h4>
+          </div>
 
           {/* VSL Section */}
           <div className="vsl-container mb-10" onContextMenu={(e) => e.preventDefault()}>
