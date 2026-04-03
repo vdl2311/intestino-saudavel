@@ -97,6 +97,19 @@ function SalesPage() {
   const [diagnosis, setDiagnosis] = useState('');
   const [showContent, setShowContent] = useState(false);
   const [nameInput, setNameInput] = useState('');
+  const [cookieConsent, setCookieConsent] = useState(true); // Default to true (hidden) until check
+
+  useEffect(() => {
+    const consent = localStorage.getItem('cookieConsent');
+    if (consent !== 'accepted') {
+      setCookieConsent(false);
+    }
+  }, []);
+
+  const acceptCookies = () => {
+    localStorage.setItem('cookieConsent', 'accepted');
+    setCookieConsent(true);
+  };
 
   const handleAnswer = async (questionId: string, answer: string) => {
     const newAnswers = { ...answers, [questionId]: answer };
@@ -732,24 +745,24 @@ function SalesPage() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="bg-[#0f1f33] text-[#4a6278] py-[60px] px-[20px] text-center text-[13px] font-sans">
-        <div className="max-w-[680px] mx-auto px-6">
-          <p className="mb-4">© 2025 O Código Oculto da Longevidade — Todos os direitos reservados</p>
-          <p className="mb-6 opacity-70">Este produto não substitui consulta médica. Resultados individuais podem variar.</p>
-          <div className="flex justify-center gap-4 text-[12px] opacity-70">
-            <a href="#" className="text-[#4a6278] hover:text-white transition-colors">Política de Privacidade</a>
-            <span>·</span>
-            <a href="#" className="text-[#4a6278] hover:text-white transition-colors">Termos de Uso</a>
-            <span>·</span>
-            <a href="#" className="text-[#4a6278] hover:text-white transition-colors">Contato</a>
-          </div>
-        </div>
-      </footer>
         </>
       )}
       </motion.div>
       )}
+
+      {/* Footer */}
+      <footer className="bg-[#0f1f33] text-[#4a6278] py-[60px] px-[20px] text-center text-[13px] font-sans">
+        <div className="max-w-[680px] mx-auto px-6">
+          <p className="mb-4">
+            Isenção de Responsabilidade: Os resultados podem variar e este método não substitui o acompanhamento médico. Este site não é afiliado ao Facebook ou a qualquer entidade do Facebook.
+          </p>
+          <div className="flex justify-center gap-4 text-[12px] opacity-70">
+            <a href="#" className="text-[#4a6278] hover:text-white transition-colors">Políticas de Privacidade</a>
+            <span>·</span>
+            <a href="#" className="text-[#4a6278] hover:text-white transition-colors">Termos de Uso</a>
+          </div>
+        </div>
+      </footer>
 
       {/* Sticky CTA */}
       <div className={`fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-[0_-10px_20px_-5px_rgba(0,0,0,0.15)] p-3 md:p-4 z-50 transition-transform duration-300 ${showSticky ? 'translate-y-0' : 'translate-y-full'}`}>
@@ -767,6 +780,15 @@ function SalesPage() {
           </div>
         </div>
       </div>
+
+      {/* Cookie Banner */}
+      {!cookieConsent && (
+        <div id="cookie-banner" style={{ position: 'fixed', bottom: 0, width: '100%', background: '#222', color: '#fff', padding: '15px', textAlign: 'center', fontFamily: 'sans-serif', zIndex: 9999, fontSize: '14px' }}>
+            Este site utiliza cookies para melhorar sua experiência e analisar o tráfego. 
+            Ao continuar navegando, você concorda com nossa <a href="#" style={{ color: '#4CAF50', textDecoration: 'underline' }}>Política de Privacidade</a>.
+            <button onClick={acceptCookies} style={{ marginLeft: '20px', background: '#4CAF50', color: 'white', border: 'none', padding: '8px 15px', cursor: 'pointer', borderRadius: '4px' }}>Aceitar</button>
+        </div>
+      )}
     </div>
   );
 }
