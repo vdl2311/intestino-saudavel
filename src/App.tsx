@@ -4,6 +4,82 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
+import { GoogleGenAI } from '@google/genai';
+import { motion, AnimatePresence } from 'motion/react';
+
+const questions = [
+  {
+    id: 'name',
+    question: 'Qual é o teu primeiro nome?',
+    type: 'text'
+  },
+  {
+    id: 'age',
+    question: 'Qual é a tua idade?',
+    type: 'choice',
+    options: ['35-45', '46-55', '56-65', '65+']
+  },
+  {
+    id: 'goal',
+    question: 'Qual é o teu principal objetivo hoje?',
+    type: 'choice',
+    options: ['Desinchar a barriga', 'Ir ao banheiro regularmente', 'Ter mais energia', 'Perder peso']
+  },
+  {
+    id: 'bloating_morning',
+    question: 'Sentes que a tua barriga "estufa" logo após as primeiras refeições do dia?',
+    type: 'choice',
+    options: ['Sim, quase sempre', 'Às vezes', 'Raramente']
+  },
+  {
+    id: 'frequency',
+    question: 'Com que frequência consegues ir ao banheiro de forma natural?',
+    type: 'choice',
+    options: ['Diariamente', '2 a 3 vezes por semana', 'Menos de 2 vezes por semana']
+  },
+  {
+    id: 'pressure',
+    question: 'Costumas sentir um "peso" ou pressão abdominal, como se houvesse algo preso?',
+    type: 'choice',
+    options: ['Sim, sinto-me pesada', 'Só às vezes', 'Não sinto']
+  },
+  {
+    id: 'fibers_intent',
+    question: 'Costumas comer fibras (aveia, pão integral, saladas) para tentar ajudar o intestino?',
+    type: 'choice',
+    options: ['Sim, foco muito nisso', 'Tento comer, mas não resolve', 'Não costumo comer']
+  },
+  {
+    id: 'fibers_paradox',
+    question: 'Já notaste que, às vezes, comer "saudável" (muitas fibras) parece deixar-te ainda mais inchada?',
+    type: 'choice',
+    options: ['Sim! Exatamente isso', 'Nunca reparei', 'Sinto-me bem com fibras']
+  },
+  {
+    id: 'laxatives_history',
+    question: 'Já utilizaste laxantes ou chás "detox" que pararam de funcionar com o tempo?',
+    type: 'choice',
+    options: ['Sim, o meu corpo habituou-se', 'Raramente uso', 'Nunca usei']
+  },
+  {
+    id: 'energy_morning',
+    question: 'Acordas com disposição ou sentes uma fadiga mental logo pela manhã?',
+    type: 'choice',
+    options: ['Sinto-me exausta', 'Energia moderada', 'Acordo bem']
+  },
+  {
+    id: 'water',
+    question: 'Quanta água bebes por dia?',
+    type: 'choice',
+    options: ['Menos de 1 litro', '1 a 2 litros', 'Mais de 2 litros']
+  },
+  {
+    id: 'commitment',
+    question: 'Se o "Ritual de 30 Segundos" de Bama pudesse limpar esse Biofilme hoje, estarias pronta para começar agora?',
+    type: 'choice',
+    options: ['SIM, ESTOU PRONTA!', 'Talvez mais tarde']
+  }
+];
 
 function SalesPage() {
   const [timeLeft, setTimeLeft] = useState(21 * 3600 + 29 * 60 + 57); // 21:29:57 in seconds
@@ -12,6 +88,84 @@ function SalesPage() {
   const [showOverlay, setShowOverlay] = useState(true);
   const [showCta, setShowCta] = useState(false);
   const videoRef = useRef<HTMLIFrameElement>(null);
+
+  // Quiz & AI State
+  const [quizStep, setQuizStep] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('');
+  const [diagnosis, setDiagnosis] = useState('');
+  const [showContent, setShowContent] = useState(false);
+  const [nameInput, setNameInput] = useState('');
+
+  const handleAnswer = async (questionId: string, answer: string) => {
+    const newAnswers = { ...answers, [questionId]: answer };
+    setAnswers(newAnswers);
+
+    if (quizStep < questions.length - 1) {
+      setQuizStep(quizStep + 1);
+    } else {
+      // Start generation
+      setIsGenerating(true);
+      setLoadingMessage(`A processar dados de ${newAnswers.name || 'você'}...`);
+      
+      setTimeout(() => {
+        setLoadingMessage('A analisar nível de Biofilme Adeso...');
+      }, 2500);
+
+      try {
+        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+        const prompt = `
+          Aja como um especialista em saúde digestiva.
+          Baseado nas seguintes respostas de um quiz, gere um diagnóstico curto, empático e impactante (EXATAMENTE 1 PARÁGRAFO) sobre o problema de "Biofilme Adeso" no intestino.
+          
+          Nome: ${newAnswers.name}
+          Idade: ${newAnswers.age}
+          Objetivo: ${newAnswers.goal}
+          Barriga estufa de manhã: ${newAnswers.bloating_morning}
+          Frequência banheiro: ${newAnswers.frequency}
+          Peso/Pressão abdominal: ${newAnswers.pressure}
+          Intenção com fibras: ${newAnswers.fibers_intent}
+          Paradoxo das fibras (inchaço): ${newAnswers.fibers_paradox}
+          Histórico de laxantes: ${newAnswers.laxatives_history}
+          Energia matinal: ${newAnswers.energy_morning}
+          Consumo de água: ${newAnswers.water}
+          Compromisso: ${newAnswers.commitment}
+          
+          O diagnóstico deve:
+          1. Chamar a pessoa pelo nome.
+          2. Explicar que o problema não é culpa dela, e sim do "Biofilme Adeso" (uma crosta tóxica).
+          3. Explicar como as respostas dela (especialmente sobre fibras e inchaço) confirmam a presença dessa crosta que age como "cimento".
+          4. Terminar dizendo que o "Ritual de Bama de 30 segundos" é a solução para derreter essa crosta.
+          
+          IMPORTANTE: O texto deve ser um único parágrafo fluido e direto.
+          Não use formatação markdown complexa, apenas texto limpo.
+        `;
+
+        const response = await ai.models.generateContent({
+          model: 'gemini-3-flash-preview',
+          contents: prompt,
+        });
+
+        setDiagnosis(response.text || 'Diagnóstico concluído.');
+        
+        setLoadingMessage('Concluído!');
+        setTimeout(() => {
+          setIsGenerating(false);
+          setShowContent(true);
+        }, 1000);
+
+      } catch (error) {
+        console.error("Erro ao gerar diagnóstico:", error);
+        setDiagnosis(`Olá ${newAnswers.name}, analisamos o seu perfil e identificamos que o Biofilme Adeso está bloqueando o seu intestino. As fibras que você consome estão agindo como cimento nessa crosta. O Ritual de Bama de 30 segundos é o próximo passo ideal para derreter esse bloqueio e devolver o seu ritmo natural.`);
+        setLoadingMessage('Concluído!');
+        setTimeout(() => {
+          setIsGenerating(false);
+          setShowContent(true);
+        }, 1000);
+      }
+    }
+  };
 
   const ativarSom = () => {
     const iframe = videoRef.current;
@@ -67,32 +221,148 @@ function SalesPage() {
   };
 
   return (
-    <div className="font-serif text-[#1a1a1a] bg-[#faf9f6] leading-[1.8] pb-24">
+    <div className="font-serif text-[#1a1a1a] bg-[#faf9f6] leading-[1.8] pb-24 min-h-screen">
       {/* Barra Alerta */}
-      <div className="bg-[#b91c1c] text-white text-center p-3 font-sans text-[13px] font-bold uppercase tracking-[1px]">
-        ⚠️ OFERTA LIMITADA — Preço especial de lançamento expira em: {formatTime(timeLeft)}
-      </div>
+      {showCta && (
+        <div className="bg-[#b91c1c] text-white text-center p-3 font-sans text-[13px] font-bold uppercase tracking-[1px]">
+          ⚠️ OFERTA LIMITADA — Preço especial de lançamento expira em: {formatTime(timeLeft)}
+        </div>
+      )}
 
-      {/* Hero Section */}
-      <div className="py-[60px] bg-white">
-        <div className="max-w-[900px] mx-auto px-6 text-center">
-          <div style={{ textAlign: 'center', fontFamily: "'Helvetica', 'Arial', sans-serif", maxWidth: '900px', margin: '0 auto', padding: '20px' }}>
-            <h3 style={{ color: '#CC0000', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '10px', textTransform: 'uppercase' }}>
-              A VERDADE SOBRE AS FIBRAS
+      {!showContent && !isGenerating && (
+        <div className="max-w-[700px] mx-auto px-6 py-12">
+          <div className="text-center mb-10">
+            <h3 className="text-[#b91c1c] font-sans font-bold text-[1.2rem] uppercase tracking-[2px] mb-3">
+              Protocolo de Longevidade
             </h3>
-            <h2 style={{ color: '#1a1a1a', fontSize: '2rem', fontWeight: 800, lineHeight: 1.2, marginBottom: '20px' }}>
-              Por que elas pararam de funcionar para você?
-            </h2>
-            <p style={{ color: '#444', fontSize: '1.4rem', lineHeight: 1.5, marginBottom: '25px' }}>
-              Entenda como o <span style={{ backgroundColor: '#ffff00', fontWeight: 'bold' }}>"Código de Bama"</span> de 30 segundos atua na limpeza profunda do seu sistema, removendo o que te impede de ter um ritmo natural e leve.
-            </p>
-            <h4 style={{ color: '#000', fontSize: '1.3rem', fontWeight: 600, borderTop: '1px dashed #ccc', borderBottom: '1px dashed #ccc', padding: '15px 0' }}>
-              Menos peso, mais energia e um corpo que obedece aos seus comandos. <br />
-              <span style={{ color: '#CC0000' }}>Assista à apresentação e destrave seu corpo.</span>
-            </h4>
+            <h1 className="text-[24px] md:text-[28px] font-black text-[#111] leading-tight mb-4">
+              Faça o teste de perfil biológico e descubra como a sabedoria ancestral de Bama pode ajudar na sua vitalidade digestiva.
+            </h1>
           </div>
 
-          {/* VSL Section */}
+          <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+            <div className="mb-8">
+              <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-[#16a34a] transition-all duration-500 ease-out"
+                  style={{ width: `${Math.min((quizStep + 1) * 8, 100)}%` }}
+                ></div>
+              </div>
+              <p className="text-center text-sm text-gray-500 mt-2 font-sans uppercase tracking-wider">
+                Pergunta {quizStep + 1} de {questions.length}
+              </p>
+            </div>
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={quizStep}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <h2 className="text-2xl font-bold text-center mb-8 text-[#111] leading-tight">
+                  {questions[quizStep].question}
+                </h2>
+
+                {questions[quizStep].type === 'text' ? (
+                  <div className="flex flex-col gap-4">
+                    <input
+                      type="text"
+                      value={nameInput}
+                      onChange={(e) => setNameInput(e.target.value)}
+                      placeholder="Digite seu nome..."
+                      className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg font-sans focus:border-[#16a34a] focus:outline-none transition-colors"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && nameInput.trim()) {
+                          handleAnswer(questions[quizStep].id, nameInput.trim());
+                        }
+                      }}
+                    />
+                    <button
+                      onClick={() => nameInput.trim() && handleAnswer(questions[quizStep].id, nameInput.trim())}
+                      disabled={!nameInput.trim()}
+                      className="w-full bg-[#16a34a] text-white font-bold py-4 rounded-xl text-lg uppercase tracking-wider disabled:opacity-50 transition-opacity"
+                    >
+                      Continuar
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-3">
+                    {questions[quizStep].options?.map((option, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => handleAnswer(questions[quizStep].id, option)}
+                        className="w-full text-left p-4 border-2 border-gray-200 rounded-xl text-lg font-sans hover:border-[#16a34a] hover:bg-green-50 transition-all"
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
+      )}
+
+      {isGenerating && (
+        <div className="max-w-[600px] mx-auto px-6 py-32 text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white p-10 rounded-2xl shadow-xl border border-gray-100 flex flex-col items-center"
+          >
+            <div className="w-16 h-16 border-4 border-gray-200 border-t-[#16a34a] rounded-full animate-spin mb-6"></div>
+            <h2 className="text-2xl font-bold text-[#111] mb-2">Analisando seu perfil...</h2>
+            <p className="text-lg text-[#666] font-sans animate-pulse">{loadingMessage}</p>
+          </motion.div>
+        </div>
+      )}
+
+      {showContent && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          {/* Diagnosis Section */}
+          <div className="py-[40px] bg-white">
+            <div className="max-w-[900px] mx-auto px-6">
+              <div className="bg-[#f8fafc] border-l-4 border-[#16a34a] p-8 rounded-r-2xl shadow-sm mb-8">
+                <h3 className="text-[#16a34a] font-sans font-bold text-[14px] uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <span className="text-xl">📋</span> SEU DIAGNÓSTICO PERSONALIZADO
+                </h3>
+                <div className="text-[18px] text-[#333] leading-relaxed whitespace-pre-wrap font-sans">
+                  {diagnosis}
+                </div>
+              </div>
+              <p className="text-center text-[18px] font-bold text-[#b91c1c] mb-4">
+                Assiste à apresentação abaixo para saberes como aplicar o Ritual de 30 Segundos no teu caso específico.
+              </p>
+            </div>
+          </div>
+
+          {/* Hero Section */}
+          <div className="pb-[60px] bg-white">
+            <div className="max-w-[900px] mx-auto px-6 text-center">
+              <div style={{ textAlign: 'center', fontFamily: "'Helvetica', 'Arial', sans-serif", maxWidth: '900px', margin: '0 auto', padding: '20px' }}>
+                <h3 style={{ color: '#CC0000', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '10px', textTransform: 'uppercase' }}>
+                  A VERDADE SOBRE AS FIBRAS
+                </h3>
+                <h2 style={{ color: '#1a1a1a', fontSize: '2rem', fontWeight: 800, lineHeight: 1.2, marginBottom: '20px' }}>
+                  Por que elas pararam de funcionar para você?
+                </h2>
+                <p style={{ color: '#444', fontSize: '1.4rem', lineHeight: 1.5, marginBottom: '25px' }}>
+                  Entenda como o <span style={{ backgroundColor: '#ffff00', fontWeight: 'bold' }}>"Código de Bama"</span> de 30 segundos atua na limpeza profunda do seu sistema, removendo o que te impede de ter um ritmo natural e leve.
+                </p>
+                <h4 style={{ color: '#000', fontSize: '1.3rem', fontWeight: 600, borderTop: '1px dashed #ccc', borderBottom: '1px dashed #ccc', padding: '15px 0' }}>
+                  Menos peso, mais energia e um corpo que obedece aos seus comandos. <br />
+                  <span style={{ color: '#CC0000' }}>Assista à apresentação e destrave seu corpo.</span>
+                </h4>
+              </div>
+
+              {/* VSL Section */}
           <div className="vsl-container mb-10" onContextMenu={(e) => e.preventDefault()}>
             {showOverlay && (
               <div id="sound-overlay" onClick={ativarSom}>
@@ -115,29 +385,28 @@ function SalesPage() {
           </div>
 
           {showCta && (
-            <div id="cta-wrapper" className="mt-8">
-              <a href="https://pay.hotmart.com/M105084214G" className="btn-buy">
-                QUERO O PROTOCOLO DE BAMA AGORA!
-              </a>
-              <p style={{ fontFamily: 'sans-serif', color: '#666', marginTop: '15px', fontSize: '0.9rem' }}>
-                ✅ Acesso imediato • 7 dias de garantia total
-              </p>
-            </div>
+            <>
+              <div id="cta-wrapper" className="mt-8">
+                <a href="https://pay.hotmart.com/M105084214G" className="btn-buy">
+                  QUERO O PROTOCOLO DE BAMA AGORA!
+                </a>
+                <p style={{ fontFamily: 'sans-serif', color: '#666', marginTop: '15px', fontSize: '0.9rem' }}>
+                  ✅ Acesso imediato • 7 dias de garantia total
+                </p>
+              </div>
+            </>
           )}
         </div>
       </div>
 
-      {/* Restante da página oculto até o delay */}
       {showCta && (
-        <div className="animate-[fadeIn_1s_ease-in]">
-          {/* Problem Section */}
-      <div className="py-[80px] bg-[#f8fafc]">
-        <div className="max-w-[680px] mx-auto px-6">
-          <div className="text-center mb-12">
-            <p className="text-[#b91c1c] font-sans font-bold text-[14px] uppercase tracking-widest mb-2">A realidade que ninguém fala</p>
-            <h2 className="text-[32px] font-extrabold text-[#111] leading-tight">Você está travado num ciclo que não é sua culpa</h2>
-          </div>
-
+        <>
+          <div className="py-[80px] bg-[#f8fafc]">
+            <div className="max-w-[680px] mx-auto px-6">
+              <div className="text-center mb-12">
+                <p className="text-[#b91c1c] font-sans font-bold text-[14px] uppercase tracking-widest mb-2">A realidade que ninguém fala</p>
+                <h2 className="text-[32px] font-extrabold text-[#111] leading-tight">Você está travado num ciclo que não é sua culpa</h2>
+              </div>
           <p className="text-[19px] mb-[30px] text-[#333]">
             Se você sente que seu corpo simplesmente parou de cooperar com você, existe uma razão científica para isso. E ela nada tem a ver com fraqueza, falta de disciplina ou o passar dos anos.
           </p>
@@ -477,7 +746,9 @@ function SalesPage() {
           </div>
         </div>
       </footer>
-      </div>
+        </>
+      )}
+      </motion.div>
       )}
 
       {/* Sticky CTA */}
