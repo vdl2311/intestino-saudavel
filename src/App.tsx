@@ -7,12 +7,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { GoogleGenAI } from '@google/genai';
 import { motion, AnimatePresence } from 'motion/react';
 
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import Privacy from './Privacy';
+import Terms from './Terms';
+
 const questions = [
-  {
-    id: 'name',
-    question: 'Qual é o teu primeiro nome?',
-    type: 'text'
-  },
   {
     id: 'age',
     question: 'Qual é a tua idade?',
@@ -78,6 +77,11 @@ const questions = [
     question: 'Se o "Ritual de 30 Segundos" de Bama pudesse limpar esse Biofilme hoje, estarias pronta para começar agora?',
     type: 'choice',
     options: ['SIM, ESTOU PRONTA!', 'Talvez mais tarde']
+  },
+  {
+    id: 'name',
+    question: 'Qual é o teu primeiro nome?',
+    type: 'text'
   }
 ];
 
@@ -97,19 +101,6 @@ function SalesPage() {
   const [diagnosis, setDiagnosis] = useState('');
   const [showContent, setShowContent] = useState(false);
   const [nameInput, setNameInput] = useState('');
-  const [cookieConsent, setCookieConsent] = useState(true); // Default to true (hidden) until check
-
-  useEffect(() => {
-    const consent = localStorage.getItem('cookieConsent');
-    if (consent !== 'accepted') {
-      setCookieConsent(false);
-    }
-  }, []);
-
-  const acceptCookies = () => {
-    localStorage.setItem('cookieConsent', 'accepted');
-    setCookieConsent(true);
-  };
 
   const handleAnswer = async (questionId: string, answer: string) => {
     const newAnswers = { ...answers, [questionId]: answer };
@@ -246,10 +237,10 @@ function SalesPage() {
         <div className="max-w-[700px] mx-auto px-6 py-12">
           <div className="text-center mb-10">
             <h3 className="text-[#b91c1c] font-sans font-bold text-[1.2rem] uppercase tracking-[2px] mb-3">
-              Protocolo de Longevidade
+              Protocolo de bama
             </h3>
             <h1 className="text-[24px] md:text-[28px] font-black text-[#111] leading-tight mb-4">
-              Faça o teste de perfil biológico e descubra como a sabedoria ancestral de Bama pode ajudar na sua vitalidade digestiva.
+              Descubra como a sabedoria ancestral de Bama pode ajudar a promover mais vitalidade digestiva no dia a dia.
             </h1>
           </div>
 
@@ -757,9 +748,9 @@ function SalesPage() {
             Isenção de Responsabilidade: Os resultados podem variar e este método não substitui o acompanhamento médico. Este site não é afiliado ao Facebook ou a qualquer entidade do Facebook.
           </p>
           <div className="flex justify-center gap-4 text-[12px] opacity-70">
-            <a href="#" className="text-[#4a6278] hover:text-white transition-colors">Políticas de Privacidade</a>
+            <Link to="/privacidade" className="text-[#4a6278] hover:text-white transition-colors">Políticas de Privacidade</Link>
             <span>·</span>
-            <a href="#" className="text-[#4a6278] hover:text-white transition-colors">Termos de Uso</a>
+            <Link to="/termos-de-uso" className="text-[#4a6278] hover:text-white transition-colors">Termos de Uso</Link>
           </div>
         </div>
       </footer>
@@ -781,18 +772,41 @@ function SalesPage() {
         </div>
       </div>
 
-      {/* Cookie Banner */}
-      {!cookieConsent && (
-        <div id="cookie-banner" style={{ position: 'fixed', bottom: 0, width: '100%', background: '#222', color: '#fff', padding: '15px', textAlign: 'center', fontFamily: 'sans-serif', zIndex: 9999, fontSize: '14px' }}>
-            Este site utiliza cookies para melhorar sua experiência e analisar o tráfego. 
-            Ao continuar navegando, você concorda com nossa <a href="#" style={{ color: '#4CAF50', textDecoration: 'underline' }}>Política de Privacidade</a>.
-            <button onClick={acceptCookies} style={{ marginLeft: '20px', background: '#4CAF50', color: 'white', border: 'none', padding: '8px 15px', cursor: 'pointer', borderRadius: '4px' }}>Aceitar</button>
-        </div>
-      )}
     </div>
   );
 }
 
 export default function App() {
-  return <SalesPage />;
+  const [cookieConsent, setCookieConsent] = useState(true); // Default to true (hidden) until check
+
+  useEffect(() => {
+    const consent = localStorage.getItem('cookieConsent');
+    if (consent !== 'accepted') {
+      setCookieConsent(false);
+    }
+  }, []);
+
+  const acceptCookies = () => {
+    localStorage.setItem('cookieConsent', 'accepted');
+    setCookieConsent(true);
+  };
+
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<SalesPage />} />
+        <Route path="/privacidade" element={<Privacy />} />
+        <Route path="/termos-de-uso" element={<Terms />} />
+      </Routes>
+
+      {/* Cookie Banner */}
+      {!cookieConsent && (
+        <div id="cookie-banner" style={{ position: 'fixed', bottom: 0, width: '100%', background: '#222', color: '#fff', padding: '15px', textAlign: 'center', fontFamily: 'sans-serif', zIndex: 9999, fontSize: '14px' }}>
+            Este site utiliza cookies para melhorar sua experiência e analisar o tráfego. 
+            Ao continuar navegando, você concorda com nossa <Link to="/privacidade" style={{ color: '#4CAF50', textDecoration: 'underline' }}>Política de Privacidade</Link>.
+            <button onClick={acceptCookies} style={{ marginLeft: '20px', background: '#4CAF50', color: 'white', border: 'none', padding: '8px 15px', cursor: 'pointer', borderRadius: '4px' }}>Aceitar</button>
+        </div>
+      )}
+    </Router>
+  );
 }
