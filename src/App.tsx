@@ -85,8 +85,13 @@ function SalesPage() {
         const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
         const prompt = `
           Aja como um especialista em saúde digestiva.
-          Baseado nas seguintes respostas de um quiz, gere um diagnóstico MUITO CURTO, empático e impactante (MÁXIMO DE 3 FRASES CURTAS) sobre o problema de "Biofilme Adeso" no intestino.
+          Baseado nas seguintes respostas de um quiz, gere um diagnóstico empático e impactante seguindo EXATAMENTE esta estrutura:
           
+          "Olá, [Nome]. Com base nas suas respostas, identificamos uma oportunidade de melhoria no seu equilíbrio interno. 
+          Muitas vezes, a sensação de [Sintoma que mais incomoda] e o ritmo irregular do organismo são sinais de que o sistema digestivo precisa de um suporte natural. O acúmulo de resíduos e o desequilíbrio da microbiota podem criar uma barreira que dificulta a absorção de nutrientes essenciais.
+          O Ritual de Bama de 30 segundos é um método desenhado para auxiliar na restauração desse equilíbrio, promovendo uma limpeza suave e ajudando seu corpo a reencontrar o ritmo natural que você merece."
+
+          Dados da pessoa:
           Nome: ${newAnswers.name}
           Retenção após refeições: ${newAnswers.retention}
           Busca por soluções naturais: ${newAnswers.natural_solutions}
@@ -94,12 +99,7 @@ function SalesPage() {
           Sintoma que mais incomoda: ${newAnswers.symptom}
           Compromisso com 30 seg/dia: ${newAnswers.commitment}
           
-          O diagnóstico deve:
-          1. Chamar a pessoa pelo nome.
-          2. Explicar como o "Biofilme Adeso" pode ser suavizado através de uma limpeza natural para a recuperação da vitalidade.
-          3. Apresentar o "Ritual de Bama de 30 segundos" como um método para auxiliar no equilíbrio natural e suporte para o seu sistema digestivo.
-          
-          IMPORTANTE: O texto deve ser extremamente direto, com no máximo 3 frases curtas. Não use formatação markdown complexa.
+          IMPORTANTE: Mantenha o tom profissional e educativo. Não use formatação markdown complexa.
         `;
 
         const response = await ai.models.generateContent({
@@ -120,7 +120,7 @@ function SalesPage() {
       } catch (error) {
         console.error("Erro ao gerar diagnóstico:", error);
         clearTimeout(messageTimer);
-        setDiagnosis(`Olá ${newAnswers.name}, o Biofilme Adeso pode estar afetando o seu bem-estar. O Ritual de Bama de 30 segundos é um método para auxiliar no seu equilíbrio natural, promovendo uma limpeza suave e a recuperação da sua vitalidade.`);
+        setDiagnosis(`Olá ${newAnswers.name}. Com base nas suas respostas, identificamos uma oportunidade de melhoria no seu equilíbrio interno. Muitas vezes, a sensação de ${newAnswers.symptom || 'desconforto'} e o ritmo irregular do organismo são sinais de que o sistema digestivo precisa de um suporte natural. O acúmulo de resíduos e o desequilíbrio da microbiota podem criar uma barreira que dificulta a absorção de nutrientes essenciais. O Ritual de Bama de 30 segundos é um método desenhado para auxiliar na restauração desse equilíbrio, promovendo uma limpeza suave e ajudando seu corpo a reencontrar o ritmo natural que você merece.`);
         setLoadingMessage('Concluído!');
         setTimeout(() => {
           setIsGenerating(false);
@@ -197,11 +197,14 @@ function SalesPage() {
         <div className="max-w-[700px] mx-auto px-6 py-12">
           <div className="text-center mb-10">
             <h3 className="text-[#b91c1c] font-sans font-bold text-[1.2rem] uppercase tracking-[2px] mb-3">
-              Protocolo de bama
+              O Segredo Milenar do Vilarejo de Bama
             </h3>
             <h1 className="text-[24px] md:text-[28px] font-black text-[#111] leading-tight mb-4">
-              Descubra como a sabedoria ancestral de Bama pode ajudar a promover mais vitalidade digestiva no dia a dia.
+              O Segredo Milenar do Vilarejo de Bama para uma Vida com Mais Leveza e Vitalidade
             </h1>
+            <p className="text-lg text-gray-600 font-sans">
+              Descubra como o equilíbrio do sistema digestivo é o pilar central da longevidade dos centenários chineses.
+            </p>
           </div>
 
           <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
@@ -315,10 +318,10 @@ function SalesPage() {
                   A VERDADE SOBRE AS FIBRAS
                 </h3>
                 <h2 style={{ color: '#1a1a1a', fontSize: '2rem', fontWeight: 800, lineHeight: 1.2, marginBottom: '20px' }}>
-                  Por que elas pararam de funcionar para você?
+                  Por que apenas comer mais fibras pode não ser o suficiente para você?
                 </h2>
                 <p style={{ color: '#444', fontSize: '1.4rem', lineHeight: 1.5, marginBottom: '25px' }}>
-                  Entenda como o <span style={{ backgroundColor: '#ffff00', fontWeight: 'bold' }}>"Código de Bama"</span> de 30 segundos atua na limpeza profunda do seu sistema, removendo o que te impede de ter um ritmo natural e leve.
+                  Se o seu sistema estiver sobrecarregado, o excesso de fibras secas pode acabar gerando mais desconforto em vez de alívio. Entenda como o <span style={{ backgroundColor: '#ffff00', fontWeight: 'bold' }}>"Código de Bama"</span> atua preparando o seu organismo para processar os alimentos de forma eficiente, removendo o que impede o seu bem-estar diário.
                 </p>
                 <h4 style={{ color: '#000', fontSize: '1.3rem', fontWeight: 600, borderTop: '1px dashed #ccc', borderBottom: '1px dashed #ccc', padding: '15px 0' }}>
                   Menos peso, mais energia e um corpo que obedece aos seus comandos. <br />
@@ -368,52 +371,44 @@ function SalesPage() {
           <div className="py-[80px] bg-[#f8fafc]">
             <div className="max-w-[680px] mx-auto px-6">
               <div className="text-center mb-12">
-                <p className="text-[#b91c1c] font-sans font-bold text-[14px] uppercase tracking-widest mb-2">A realidade que ninguém fala</p>
-                <h2 className="text-[32px] font-extrabold text-[#111] leading-tight">Você está travado num ciclo que não é sua culpa</h2>
+                <p className="text-[#16a34a] font-sans font-bold text-[14px] uppercase tracking-widest mb-2">O Equilíbrio que seu Corpo Busca</p>
+                <h2 className="text-[32px] font-extrabold text-[#111] leading-tight">Muitas pessoas sentem que o corpo não responde mais com a mesma leveza de antes</h2>
               </div>
           <p className="text-[19px] mb-[30px] text-[#333]">
-            Se você sente que seu corpo simplesmente parou de cooperar com você, existe uma razão científica para isso. E ela nada tem a ver com fraqueza, falta de disciplina ou o passar dos anos.
+            Se você percebe que sua rotina digestiva está irregular, existe uma explicação baseada no equilíbrio da sua microbiota. Não se trata de falta de disciplina, mas sim de como seu organismo processa o que você consome.
           </p>
 
           <ul className="space-y-4 mb-10 font-sans text-[16px] text-[#444]">
             <li className="flex items-start gap-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-              <span className="text-[#b91c1c] font-bold mt-1">✕</span>
-              <p className="m-0"><b>Você acorda já com inchaço</b> — antes mesmo de comer a primeira refeição do dia</p>
+              <span className="text-[#16a34a] font-bold mt-1">✓</span>
+              <p className="m-0"><b>Desconforto Abdominal:</b> Entenda por que a sensação de inchaço pode surgir mesmo após refeições leves.</p>
             </li>
             <li className="flex items-start gap-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-              <span className="text-[#b91c1c] font-bold mt-1">✕</span>
-              <p className="m-0"><b>Fibras pioram tudo</b> — quanto mais salada e farelo, mais gases e pressão</p>
+              <span className="text-[#16a34a] font-bold mt-1">✓</span>
+              <p className="m-0"><b>O Papel das Fibras:</b> Descubra quando o excesso de fibras pode estar sobrecarregando seu sistema em vez de ajudar.</p>
             </li>
             <li className="flex items-start gap-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-              <span className="text-[#b91c1c] font-bold mt-1">✕</span>
-              <p className="m-0"><b>Laxantes viram dependência</b> — o intestino "esquece" como funcionar sozinho</p>
+              <span className="text-[#16a34a] font-bold mt-1">✓</span>
+              <p className="m-0"><b>Vitalidade Diária:</b> Recupere a disposição natural que um sistema digestivo equilibrado proporciona.</p>
             </li>
             <li className="flex items-start gap-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-              <span className="text-[#b91c1c] font-bold mt-1">✕</span>
-              <p className="m-0"><b>O cansaço não vai embora</b> — mesmo dormindo 8 horas, você acorda exausto</p>
-            </li>
-            <li className="flex items-start gap-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-              <span className="text-[#b91c1c] font-bold mt-1">✕</span>
-              <p className="m-0"><b>A roupa aperta diferente</b> — não é peso; é distensão abdominal crônica</p>
-            </li>
-            <li className="flex items-start gap-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-              <span className="text-[#b91c1c] font-bold mt-1">✕</span>
-              <p className="m-0"><b>A mente fica turva</b> — concentração, memória e humor todos prejudicados</p>
+              <span className="text-[#16a34a] font-bold mt-1">✓</span>
+              <p className="m-0"><b>Leveza e Ritmo:</b> Ajude seu corpo a reencontrar a regularidade de forma natural e suave.</p>
             </li>
           </ul>
 
           <div className="bg-[#1c3557] text-white p-8 rounded-2xl shadow-lg mb-8 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-2 h-full bg-[#f6c445]"></div>
             <p className="text-[22px] font-bold italic leading-snug m-0">
-              "O problema não é que você come errado. É que há um inimigo invisível colado nas paredes do seu intestino — e nenhuma dieta do mundo funciona enquanto ele estiver lá."
+              "Muitas pessoas sentem que o corpo não responde mais como antes, mesmo mantendo uma dieta saudável. Estudos indicam que o acúmulo natural de resíduos pode criar uma barreira no sistema digestivo, dificultando a absorção de nutrientes."
             </p>
           </div>
 
           <p className="text-[19px] mb-[20px] text-[#333]">
-            Esse inimigo tem nome: <b>Biofilme Adeso</b>. É uma matriz criada por bactérias patogênicas que literalmente cola os resíduos às paredes do seu cólon, cria gases tóxicos, bloqueia a absorção de nutrientes e desliga o sistema nervoso que controla o movimento intestinal.
+            O acúmulo natural de resíduos nas paredes do sistema digestivo pode criar uma barreira que dificulta a absorção de nutrientes essenciais. Esse desequilíbrio pode afetar o ritmo do seu organismo.
           </p>
-          <p className="text-[19px] text-[#333] bg-[#fee2e2] p-5 rounded-xl border border-[#fca5a5]">
-            <b>E a pior notícia?</b> Quanto mais fibras secas você come sem primeiro remover esse biofilme, mais você alimenta o problema — o que os especialistas chamam de <b>Efeito Cimento</b>.
+          <p className="text-[19px] text-[#333] bg-[#f0fdf4] p-5 rounded-xl border border-[#bbf7d0]">
+            O <b>Protocolo de Bama</b> foca em auxiliar na restauração desse equilíbrio, promovendo uma limpeza profunda e natural através de rituais milenares.
           </p>
         </div>
       </div>
@@ -442,12 +437,12 @@ function SalesPage() {
           <div className="bg-[#f0fdf4] p-6 rounded-2xl border border-[#bbf7d0] my-8">
             <h3 className="font-bold text-[#166534] text-[20px] mb-3">O Nervo Vago:</h3>
             <p className="text-[#15803d] m-0">
-              O cabo de fibra ótica entre seu cérebro e seu intestino. Quando ele está ativo, o intestino se move. Quando o estresse e o biofilme o sufocam — a estagnação que você conhece tão bem.
+              O cabo de comunicação entre seu cérebro e seu intestino. Quando ele está em equilíbrio, o sistema flui naturalmente. Quando o estresse e o acúmulo de resíduos o influenciam — surge aquela sensação de desconforto que muitos conhecem.
             </p>
           </div>
 
           <p className="text-[22px] font-bold text-[#111] leading-snug text-center mt-10">
-            O Protocolo de Bama é a tradução prática desse segredo milenar: 14 dias estruturados para dissolver o biofilme, recolonizar a microbiota ancestral e reativar o Nervo Vago — devolvendo ao seu sistema a inteligência biológica que ele nunca deveria ter perdido.
+            O Protocolo de Bama é a tradução prática desse segredo milenar: 14 dias estruturados para auxiliar na restauração da microbiota ancestral e promover o equilíbrio do Nervo Vago — suportando o ritmo natural que o seu corpo merece.
           </p>
         </div>
       </div>
@@ -463,13 +458,13 @@ function SalesPage() {
 
           <div className="space-y-6 font-sans">
             {[
-              { num: "1", title: "O Segredo das Montanhas de Bama", desc: "A história dos centenários que esqueceram o que é constipação — e a ciência por trás da Microbiota Ancestral que os mantém jovens por dentro." },
-              { num: "2", title: "O Inimigo Invisível", desc: "Por que o intestino vira \"cimento\" — e como o Biofilme Adeso sabota qualquer dieta. O erro fatal das fibras secas revelado." },
-              { num: "3", title: "A Conexão Intestino-Cérebro", desc: "Como o estresse \"tranca\" a chave do peristaltismo — e os rituais de Bama que reativam o Nervo Vago em menos de 60 segundos." },
-              { num: "4", title: "O Ritual de 30 Segundos", desc: "A técnica matinal de hidratação que dispara o Reflexo Gastrocólico adormecido — exatamente como os anciãos de Bama fazem ao amanhecer." },
-              { num: "5", title: "Alimentos Vivos vs. Mortos", desc: "A distinção que os centenários fazem intuitivamente — e que você pode aplicar em qualquer supermercado. As bactérias da juventude e o que elas comem." },
-              { num: "6", title: "O Lubrificante Natural", desc: "As gorduras inteligentes que mantêm o cólon escorregadio — e por que eliminar os óleos errados muda tudo em menos de 48 horas." },
-              { num: "7", title: "Postura e Pressão", desc: "O erro de design do vaso sanitário moderno — e o ajuste de 15 segundos que elimina esforço, hemorroidas e a sensação de \"sobrou algo\"." },
+              { num: "1", title: "O Segredo de Bama", desc: "A história e a ciência por trás da Microbiota Ancestral." },
+              { num: "2", title: "Equilíbrio Interno", desc: "Como evitar o acúmulo de resíduos que sobrecarregam o sistema." },
+              { num: "3", title: "Conexão Mente-Corpo", desc: "O papel do Nervo Vago na regularidade do seu organismo." },
+              { num: "4", title: "O Ritual de 30 Segundos", desc: "A técnica matinal para despertar seu ritmo natural." },
+              { num: "5", title: "Alimentos de Vitalidade", desc: "Como escolher o que realmente nutre suas bactérias boas." },
+              { num: "6", title: "Suporte Natural", desc: "Gorduras inteligentes que auxiliam no trânsito digestivo." },
+              { num: "7", title: "Postura e Bem-estar", desc: "Pequenos ajustes diários para um esvaziamento completo e sem esforço." },
             ].map((chapter, i) => (
               <div key={i} className="flex gap-4 bg-[#2a4a73] p-6 rounded-2xl">
                 <div className="text-[#f6c445] font-black text-[40px] leading-none opacity-80">{chapter.num}</div>
@@ -583,7 +578,7 @@ function SalesPage() {
         <div className="max-w-[680px] mx-auto px-6">
           <div className="text-center mb-10">
             <p className="text-[#16a34a] font-sans font-bold text-[14px] uppercase tracking-widest mb-2">Sua decisão</p>
-            <h2 className="text-[32px] font-extrabold text-[#111] leading-tight">Escolha sua transformação</h2>
+            <h2 className="text-[32px] font-extrabold text-[#111] leading-tight">Recupere sua Leveza Ancestral hoje mesmo.</h2>
             <p className="text-[#666] mt-4 text-[18px]">Por um valor menor do que uma consulta médica, você acessa a ciência que os centenários vivem há milênios.</p>
           </div>
 
@@ -602,7 +597,7 @@ function SalesPage() {
               <li className="flex items-start gap-3"><span className="text-[#16a34a] font-bold">✓</span> Checklist Diário de Recalibragem</li>
               <li className="flex items-start gap-3"><span className="text-[#16a34a] font-bold">✓</span> Card "Dicas de Ouro para a Geladeira"</li>
               <li className="flex items-start gap-3"><span className="text-[#16a34a] font-bold">✓</span> Suporte por e-mail incluso</li>
-              <li className="flex items-start gap-3"><span className="text-[#16a34a] font-bold">✓</span> Garantia incondicional de 7 dias</li>
+              <li className="flex items-start gap-3"><span className="text-[#16a34a] font-bold">✓</span> <b>Risco Zero com Nossa Garantia de 7 Dias:</b> Aplique o Protocolo de Bama. Se em até 7 dias você não sentir uma melhora real na sua disposição e no seu ritmo digestivo, devolvemos 100% do seu investimento.</li>
             </ul>
 
             <a href="https://pay.hotmart.com/M105084214G?checkoutMode=10" className="block text-center w-full bg-[#16a34a] text-white no-underline py-5 px-6 rounded-2xl text-[22px] font-black transition-all duration-300 border-b-[6px] border-[#15803d] shadow-xl hover:translate-y-[2px] hover:border-b-[4px]">
