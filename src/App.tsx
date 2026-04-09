@@ -596,7 +596,6 @@ function SalesPage() {
               <li className="flex items-start gap-3"><span className="text-[#16a34a] font-bold">✓</span> As 3 Receitas-Chave de Bama</li>
               <li className="flex items-start gap-3"><span className="text-[#16a34a] font-bold">✓</span> Checklist Diário de Recalibragem</li>
               <li className="flex items-start gap-3"><span className="text-[#16a34a] font-bold">✓</span> Card "Dicas de Ouro para a Geladeira"</li>
-              <li className="flex items-start gap-3"><span className="text-[#16a34a] font-bold">✓</span> Suporte por e-mail incluso</li>
               <li className="flex items-start gap-3"><span className="text-[#16a34a] font-bold">✓</span> <b>Risco Zero com Nossa Garantia de 7 Dias:</b> Aplique o Protocolo de Bama. Se em até 7 dias você não sentir uma melhora real na sua disposição e no seu ritmo digestivo, devolvemos 100% do seu investimento.</li>
             </ul>
 
