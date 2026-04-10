@@ -53,9 +53,7 @@ function SalesPage() {
   const [timeLeft, setTimeLeft] = useState(21 * 3600 + 29 * 60 + 57); // 21:29:57 in seconds
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [showSticky, setShowSticky] = useState(false);
-  const [showOverlay, setShowOverlay] = useState(true);
-  const [showCta, setShowCta] = useState(false);
-  const videoRef = useRef<HTMLIFrameElement>(null);
+  const [showCta, setShowCta] = useState(true);
 
   // Quiz & AI State
   const [quizStep, setQuizStep] = useState(0);
@@ -114,7 +112,6 @@ function SalesPage() {
         setTimeout(() => {
           setIsGenerating(false);
           setShowContent(true);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
         }, 400);
 
       } catch (error) {
@@ -125,29 +122,17 @@ function SalesPage() {
         setTimeout(() => {
           setIsGenerating(false);
           setShowContent(true);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
         }, 400);
       }
     }
   };
 
-  const ativarSom = () => {
-    const iframe = videoRef.current;
-    if (iframe) {
-      // Envia comando para o iframe ativar o som (recarrega com muted=false)
-      const currentSrc = iframe.src;
-      iframe.src = currentSrc.replace("muted=true", "muted=false");
-    }
 
-    setShowOverlay(false);
-    
-    // TEMPO PARA O CONTEÚDO APARECER (em segundos)
-    // 3 minutos e 19 segundos = 199 segundos
-    const tempoDelay = 199; 
-    setTimeout(() => {
-      setShowCta(true);
-    }, tempoDelay * 1000);
-  };
+  useEffect(() => {
+    if (showContent) {
+      window.scrollTo(0, 0);
+    }
+  }, [showContent]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -187,7 +172,7 @@ function SalesPage() {
   return (
     <div className="font-serif text-[#1a1a1a] bg-[#faf9f6] leading-[1.8] pb-24 min-h-screen">
       {/* Barra Alerta */}
-      {showCta && (
+      {showContent && showCta && (
         <div className="bg-[#b91c1c] text-white text-center p-3 font-sans text-[13px] font-bold uppercase tracking-[1px]">
           ⚠️ OFERTA LIMITADA — Preço especial de lançamento expira em: {formatTime(timeLeft)}
         </div>
@@ -196,11 +181,8 @@ function SalesPage() {
       {!showContent && !isGenerating && (
         <div className="max-w-[700px] mx-auto px-6 py-12">
           <div className="text-center mb-10">
-            <h3 className="text-[#b91c1c] font-sans font-bold text-[1.2rem] uppercase tracking-[2px] mb-3">
-              O Segredo Milenar do Vilarejo de Bama
-            </h3>
             <h1 className="text-[24px] md:text-[28px] font-black text-[#111] leading-tight mb-4">
-              O Segredo Milenar do Vilarejo de Bama para uma Vida com Mais Leveza e Vitalidade
+              A Sabedoria Ancestral de Bama para o Equilíbrio Digestivo
             </h1>
             <p className="text-lg text-gray-600 font-sans">
               Descubra como o equilíbrio do sistema digestivo é o pilar central da longevidade dos centenários chineses.
@@ -304,9 +286,6 @@ function SalesPage() {
                   {diagnosis}
                 </div>
               </div>
-              <p className="text-center text-[18px] font-bold text-[#b91c1c] mb-4">
-                Assiste à apresentação abaixo para saberes como aplicar o Ritual de 30 Segundos no teu caso específico.
-              </p>
             </div>
           </div>
 
@@ -324,32 +303,10 @@ function SalesPage() {
                   Se o seu sistema estiver sobrecarregado, o excesso de fibras secas pode acabar gerando mais desconforto em vez de alívio. Entenda como o <span style={{ backgroundColor: '#ffff00', fontWeight: 'bold' }}>"Código de Bama"</span> atua preparando o seu organismo para processar os alimentos de forma eficiente, removendo o que impede o seu bem-estar diário.
                 </p>
                 <h4 style={{ color: '#000', fontSize: '1.3rem', fontWeight: 600, borderTop: '1px dashed #ccc', borderBottom: '1px dashed #ccc', padding: '15px 0' }}>
-                  Menos peso, mais energia e um corpo que obedece aos seus comandos. <br />
-                  <span style={{ color: '#CC0000' }}>Assista à apresentação e destrave seu corpo.</span>
+                  Menos peso, mais energia e um corpo que obedece aos seus comandos.
                 </h4>
               </div>
 
-              {/* VSL Section */}
-          <div className="vsl-container mb-10" onContextMenu={(e) => e.preventDefault()}>
-            {showOverlay && (
-              <div id="sound-overlay" onClick={ativarSom}>
-                <div className="pulse-button">
-                   🔊 CLIQUE PARA OUVIR COM SOM
-                </div>
-              </div>
-            )}
-
-            <iframe 
-              ref={videoRef}
-              id="bunny-video" 
-              src="https://iframe.mediadelivery.net/embed/628378/69d7a3d3-ca48-4560-b5b4-bccbe6aff1fc?autoplay=true&muted=true&loop=false&preload=true&controls=false&disableSeeking=true&blockSeeking=true&playsinline=true" 
-              loading="lazy" 
-              style={{ border: 0, position: 'absolute', top: 0, height: '100%', width: '100%', zIndex: 1 }} 
-              allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; clipboard-write;" 
-            ></iframe>
-
-            <div id="video-guard" onContextMenu={(e) => e.preventDefault()} onDragStart={(e) => e.preventDefault()} onMouseDown={(e) => e.preventDefault()} onMouseMove={(e) => e.preventDefault()} onMouseUp={(e) => e.preventDefault()} onPointerDown={(e) => e.preventDefault()} onPointerMove={(e) => e.preventDefault()} onPointerUp={(e) => e.preventDefault()} onClick={(e) => e.stopPropagation()} onDoubleClick={(e) => e.stopPropagation()} onTouchStart={(e) => e.preventDefault()} onTouchMove={(e) => e.preventDefault()} onTouchEnd={(e) => e.preventDefault()}></div>
-          </div>
 
           {showCta && (
             <>
