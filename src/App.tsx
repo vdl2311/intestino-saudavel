@@ -53,9 +53,7 @@ function SalesPage() {
   const [timeLeft, setTimeLeft] = useState(21 * 3600 + 29 * 60 + 57); // 21:29:57 in seconds
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [showSticky, setShowSticky] = useState(false);
-  const [showOverlay, setShowOverlay] = useState(true);
   const [showCta, setShowCta] = useState(true);
-  const videoRef = useRef<HTMLIFrameElement>(null);
 
   // Quiz & AI State
   const [quizStep, setQuizStep] = useState(0);
@@ -84,12 +82,12 @@ function SalesPage() {
       try {
         const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
         const prompt = `
-          Aja como um especialista em saúde digestiva.
-          Baseado nas seguintes respostas de um quiz, gere um diagnóstico empático e impactante seguindo EXATAMENTE esta estrutura:
+          Aja como um especialista em bem-estar e vitalidade.
+          Baseado nas seguintes respostas de um quiz, gere um diagnóstico empático e focado em estilo de vida seguindo EXATAMENTE esta estrutura:
           
           "Olá, [Nome]. Com base nas suas respostas, identificamos uma oportunidade de melhoria no seu equilíbrio interno. 
           Muitas vezes, a sensação de [Sintoma que mais incomoda] e o ritmo irregular do organismo são sinais de que o sistema digestivo precisa de um suporte natural. O acúmulo de resíduos e o desequilíbrio da microbiota podem criar uma barreira que dificulta a absorção de nutrientes essenciais.
-          O Ritual de Bama de 30 segundos é um método desenhado para auxiliar na restauração desse equilíbrio, promovendo uma limpeza suave e ajudando seu corpo a reencontrar o ritmo natural que você merece."
+          O Ritual de Bama de 30 segundos é um método desenhado para auxiliar na restauração desse equilíbrio, promovendo um suporte suave e ajudando seu corpo a reencontrar o ritmo natural que você merece."
 
           Dados da pessoa:
           Nome: ${newAnswers.name}
@@ -119,7 +117,7 @@ function SalesPage() {
       } catch (error) {
         console.error("Erro ao gerar diagnóstico:", error);
         clearTimeout(messageTimer);
-        setDiagnosis(`Olá ${newAnswers.name}. Com base nas suas respostas, identificamos uma oportunidade de melhoria no seu equilíbrio interno. Muitas vezes, a sensação de ${newAnswers.symptom || 'desconforto'} e o ritmo irregular do organismo são sinais de que o sistema digestivo precisa de um suporte natural. O acúmulo de resíduos e o desequilíbrio da microbiota podem criar uma barreira que dificulta a absorção de nutrientes essenciais. O Ritual de Bama de 30 segundos é um método desenhado para auxiliar na restauração desse equilíbrio, promovendo uma limpeza suave e ajudando seu corpo a reencontrar o ritmo natural que você merece.`);
+        setDiagnosis(`Olá ${newAnswers.name}. Com base nas suas respostas, identificamos uma oportunidade de melhoria no seu equilíbrio interno. Muitas vezes, a sensação de ${newAnswers.symptom || 'desconforto'} e o ritmo irregular do organismo são sinais de que o sistema digestivo precisa de um suporte natural. O acúmulo de resíduos e o desequilíbrio da microbiota podem criar uma barreira que dificulta a absorção de nutrientes essenciais. O Ritual de Bama de 30 segundos é um método desenhado para auxiliar na restauração desse equilíbrio, promovendo um suporte suave e ajudando seu corpo a reencontrar o ritmo natural que você merece.`);
         setLoadingMessage('Concluído!');
         setTimeout(() => {
           setIsGenerating(false);
@@ -127,17 +125,6 @@ function SalesPage() {
         }, 400);
       }
     }
-  };
-
-  const ativarSom = () => {
-    const iframe = videoRef.current;
-    if (iframe) {
-      // Envia comando para o iframe ativar o som (recarrega com muted=false)
-      const currentSrc = iframe.src;
-      iframe.src = currentSrc.replace("muted=true", "muted=false");
-    }
-
-    setShowOverlay(false);
   };
 
 
@@ -317,32 +304,9 @@ function SalesPage() {
                 </p>
                 <h4 style={{ color: '#000', fontSize: '1.3rem', fontWeight: 600, borderTop: '1px dashed #ccc', borderBottom: '1px dashed #ccc', padding: '15px 0' }}>
                   Menos peso, mais energia e um corpo que obedece aos seus comandos. <br />
-                  <span style={{ color: '#CC0000' }}>Assista à apresentação e destrave seu corpo.</span>
+                  <span style={{ color: '#CC0000' }}>Destrave seu equilíbrio hoje mesmo.</span>
                 </h4>
               </div>
-
-              {/* VSL Section */}
-              <div className="vsl-container mb-10" onContextMenu={(e) => e.preventDefault()}>
-                {showOverlay && (
-                  <div id="sound-overlay" onClick={ativarSom}>
-                    <div className="pulse-button">
-                       🔊 CLIQUE PARA OUVIR COM SOM
-                    </div>
-                  </div>
-                )}
-
-                <iframe 
-                  ref={videoRef}
-                  id="bunny-video" 
-                  src="https://iframe.mediadelivery.net/embed/628378/69d7a3d3-ca48-4560-b5b4-bccbe6aff1fc?autoplay=true&muted=true&loop=false&preload=true&controls=false&disableSeeking=true&blockSeeking=true&playsinline=true" 
-                  loading="lazy" 
-                  style={{ border: 0, position: 'absolute', top: 0, height: '100%', width: '100%', zIndex: 1 }} 
-                  allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; clipboard-write;" 
-                ></iframe>
-
-                <div id="video-guard" onContextMenu={(e) => e.preventDefault()} onDragStart={(e) => e.preventDefault()} onMouseDown={(e) => e.preventDefault()} onMouseMove={(e) => e.preventDefault()} onMouseUp={(e) => e.preventDefault()} onPointerDown={(e) => e.preventDefault()} onPointerMove={(e) => e.preventDefault()} onPointerUp={(e) => e.preventDefault()} onClick={(e) => e.stopPropagation()} onDoubleClick={(e) => e.stopPropagation()} onTouchStart={(e) => e.preventDefault()} onTouchMove={(e) => e.preventDefault()} onTouchEnd={(e) => e.preventDefault()}></div>
-              </div>
-
 
           {showCta && (
             <>
@@ -401,7 +365,7 @@ function SalesPage() {
             O acúmulo natural de resíduos nas paredes do sistema digestivo pode criar uma barreira que dificulta a absorção de nutrientes essenciais. Esse desequilíbrio pode afetar o ritmo do seu organismo.
           </p>
           <p className="text-[19px] text-[#333] bg-[#f0fdf4] p-5 rounded-xl border border-[#bbf7d0]">
-            O <b>Protocolo de Bama</b> foca em auxiliar na restauração desse equilíbrio, promovendo uma limpeza profunda e natural através de rituais milenares.
+            O <b>Protocolo de Bama</b> foca em auxiliar na restauração desse equilíbrio, promovendo um suporte natural e profundo através de rituais milenares.
           </p>
         </div>
       </div>
@@ -411,14 +375,14 @@ function SalesPage() {
         <div className="max-w-[680px] mx-auto px-6">
           <div className="text-center mb-12">
             <p className="text-[#16a34a] font-sans font-bold text-[14px] uppercase tracking-widest mb-2">A descoberta que mudou tudo</p>
-            <h2 className="text-[32px] font-extrabold text-[#111] leading-tight">Nas montanhas remotas da China, o envelhecimento tem outra cara</h2>
+            <h2 className="text-[32px] font-extrabold text-[#111] leading-tight">Nas montanhas remotas da China, a vitalidade tem outra cara</h2>
           </div>
 
           <p className="text-[19px] mb-[20px] text-[#333]">
             Na vila de Bama, província de Guangxi, existe a maior concentração de centenários por metro quadrado do planeta. Homens e mulheres de 100, 110 anos que carregam a lenha, caminham pelas trilhas e dormem como crianças.
           </p>
           <p className="text-[19px] mb-[20px] text-[#333]">
-            O que intriga gastroenterologistas do mundo inteiro não é apenas a longevidade — é a qualidade da saúde digestiva dessas pessoas. Elas não conhecem constipação. Não conhecem inchaço. Não conhecem o "peso" abdominal que para você parece normal.
+            O que intriga especialistas do mundo inteiro não é apenas a longevidade — é a qualidade do bem-estar digestivo dessas pessoas. Elas não conhecem constipação. Não conhecem inchaço. Não conhecem o "peso" abdominal que para você parece normal.
           </p>
           <p className="text-[19px] mb-[20px] text-[#333]">
             A resposta está em uma herança invisível preservada pelo isolamento geográfico: a <b>Microbiota Ancestral</b>. Uma "floresta tropical" de micro-organismos — especialmente o <i>Lactobacillus reuteri</i> — que a civilização moderna destruiu com ultraprocessados, antibióticos e estresse crônico.
@@ -551,7 +515,7 @@ function SalesPage() {
 
           <div className="space-y-6 font-sans">
             {[
-              { num: "1", title: "Guia Prático de 14 Dias — Lista de Compras + Receitas", desc: "Tudo o que você precisa comprar, as 3 receitas-chave (Gel Vassoura, Caldo de Limpeza e Chucrute de Ouro) e o cronograma completo fase a fase. Imprima e cole na geladeira." },
+              { num: "1", title: "Guia Prático de 14 Dias — Lista de Compras + Receitas", desc: "Tudo o que você precisa comprar, as 3 receitas-chave (Gel Vassoura, Caldo de Vitalidade e Chucrute de Ouro) e o cronograma completo fase a fase. Imprima e cole na geladeira." },
               { num: "2", title: "Checklist Diário de Recalibragem", desc: "Um checklist simples para marcar cada hábito diário do protocolo. Não deixa você esquecer nenhum passo — e dá a satisfação visual de ver seu progresso crescer dia a dia." },
               { num: "3", title: "Dicas de Ouro para Fixar na Geladeira", desc: "Os 3 mandamentos ancestrais condensados em um card visual que você coloca na geladeira: Água Morna SEMPRE · Relaxe a Mandíbula · Azeite é Remédio." },
             ].map((bonus, i) => (
@@ -639,10 +603,10 @@ function SalesPage() {
             {[
               { q: "Para quem este protocolo é indicado?", a: "Para adultos de todas as idades que sofrem com constipação crônica, inchaço abdominal persistente, sensação de esvaziamento incompleto, fadiga pós-refeição ou que simplesmente percebem que o intestino \"parou de ouvir\". O protocolo é seguro para a maioria das pessoas, mas recomendamos consultar seu médico se você tiver condições inflamatórias intestinais graves." },
               { q: "Preciso comprar produtos caros ou exóticos?", a: "Não. A lista de compras do protocolo usa ingredientes facilmente encontrados em qualquer mercado ou feirinha: abóbora, salsão, limão, gengibre, sementes de chia, linhaça, azeite extravirgem e vinagre de maçã. Os únicos \"suplementos\" mencionados são opcionais (Magnésio Bisglicinato — disponível em farmácias por menos de R$30)." },
-              { q: "Em quanto tempo vejo resultado?", a: "Muitas pessoas relatam diferença perceptível nos primeiros 3 dias da Fase 1 (Limpeza de Choque). A transformação mais significativa — com a recolonização da microbiota — ocorre entre os dias 4 e 10. Ao final dos 14 dias, o objetivo é que o seu intestino funcione no \"piloto automático\", sem dependência de laxantes ou rituais elaborados." },
+              { q: "Em quanto tempo vejo resultado?", a: "Muitas pessoas relatam diferença perceptível nos primeiros 3 dias da Fase 1 (Ajuste de Equilíbrio). A transformação mais significativa — com a recolonização da microbiota — ocorre entre os dias 4 e 10. Ao final dos 14 dias, o objetivo é que o seu intestino funcione no \"piloto automático\", sem dependência de laxantes ou rituais elaborados." },
               { q: "É um e-book ou tem acesso a aulas/vídeos?", a: "O Protocolo de Bama é entregue como e-book digital (PDF) — compatível com celular, tablet e computador. Você pode ler, salvar offline e imprimir. O formato foi escolhido intencionalmente: o protocolo é direto ao ponto, sem horas de vídeo para assistir antes de começar." },
               { q: "Como funciona a garantia de 7 dias?", a: "Simples: se em até 7 dias após a compra você não estiver satisfeito com os resultados — por qualquer motivo — basta enviar um e-mail para nosso suporte solicitando o reembolso. Devolvemos 100% do valor pago, sem questionamentos. Não precisamos de justificativa. Sua satisfação é a única condição." },
-              { q: "Este protocolo substitui tratamento médico?", a: "Não. O Protocolo de Bama é um guia de hábitos baseado em sabedoria ancestral e respaldado por pesquisas científicas. Ele não substitui o acompanhamento de um gastroenterologista ou médico, especialmente em casos de doenças diagnosticadas. Se você tiver dúvidas sobre a adequação do protocolo ao seu estado de saúde, consulte seu médico antes de começar." },
+              { q: "Este protocolo substitui tratamento médico?", a: "Não. O Protocolo de Bama é um guia de hábitos baseado em sabedoria ancestral e respaldado por pesquisas científicas. Ele não substitui o acompanhamento de um gastroenterologista ou médico, especialmente em casos de condições pré-existentes. Se você tiver dúvidas sobre a adequação do protocolo ao seu bem-estar, consulte seu médico antes de começar." },
             ].map((faq, i) => (
               <div key={i} className="bg-white border border-gray-200 rounded-xl overflow-hidden">
                 <button 

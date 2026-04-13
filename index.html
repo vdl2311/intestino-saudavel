@@ -1,23 +1,6 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <script>
-      // Aggressive fix for "Cannot set property fetch of #<Window> which has only a getter"
-      // This must run before any other scripts.
-      (function() {
-        try {
-          var currentFetch = window.fetch;
-          Object.defineProperty(window, 'fetch', {
-            get: function() { return currentFetch; },
-            set: function(v) { currentFetch = v; },
-            configurable: true,
-            enumerable: true
-          });
-        } catch (e) {
-          console.error("VSL: Failed to patch window.fetch", e);
-        }
-      })();
-    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="facebook-domain-verification" content="a1a9kjlee2m00mxtcx2od9ea93ykdj" />
@@ -60,7 +43,6 @@
         })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
     </script>
     <!-- End Hotjar Tracking Code -->
-    <script type="text/javascript" src="https://assets.mediadelivery.net/playerjs/player-0.1.0.min.js"></script>
     <!-- Pinterest Tag -->
     <script>
     !function(e){if(!window.pintrk){window.pintrk = function () {
