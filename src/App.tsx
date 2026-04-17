@@ -6,57 +6,57 @@ import Terms from './Terms';
 
 const questions = [
   {
-    id: 'morning_feeling',
-    question: 'Como você se sente nos primeiros 15 minutos após acordar?',
+    id: 'routine_wear',
+    question: 'Como você descreveria o impacto da rotina diária no seu relacionamento hoje?',
     options: [
-      'Disposta e com a mente clara.',
-      'Pesada, como se precisasse de mais 5 horas de sono.',
-      'Irritada com o barulho ou com as obrigações do dia.'
+      'Temos uma convivência harmoniosa e conseguimos equilibrar tudo.',
+      'Percebo que o cansaço e o excesso de estresse nos distanciam em alguns dias.',
+      'Sinto que o desgaste tomou conta e muitas vezes vivemos no "piloto automático".'
     ]
   },
   {
-    id: 'vitality_signal',
-    question: 'Ao se olhar no espelho, o que você mais nota no seu rosto ultimamente?',
+    id: 'mutual_admiration',
+    question: 'Quando vocês conversam ou estão juntos, como você avalia o nível de admiração e troca entre vocês?',
     options: [
-      'Um brilho natural e olhar descansado.',
-      'Olheiras persistentes ou pele sem viço ("opaca").',
-      'Inchaço matinal que demora a passar.'
+      'Nossa conexão flui bem e aproveitamos o tempo.',
+      'Ainda existe, mas é frequentemente abafada pelas tensões de casa.',
+      'Sinto muita falta dos momentos em que nos admirávamos genuinamente, sem a pressão do dia a dia.'
     ]
   },
   {
-    id: 'belly_knot',
-    question: 'Com que frequência você sente que sua região abdominal fica "estufada" ou desconfortável após as refeições?',
+    id: 'conflict_frequency',
+    question: 'Com que frequência os compromissos diários e o cansaço acabam gerando uma sensação de atrito ou distanciamento no casal?',
     options: [
-      'Raramente, me sinto leve.',
-      'Às vezes, dependendo do que eu como.',
-      'Quase sempre; sinto que meu corpo está "brigando" com a comida.'
+      'Raramente, lidamos bem com a pressão em dupla.',
+      'Às vezes, dependendo do que enfrentamos na semana.',
+      'Quase sempre; parece que o peso da semana está sugando nossa energia para estarmos juntos.'
     ]
   },
   {
-    id: 'relationship_thermometer',
-    question: 'Como está sua disposição para momentos de intimidade e toque com seu parceiro?',
+    id: 'intimacy_thermometer',
+    question: 'Como está o conforto para momentos a dois, seja uma conversa tranquila ou tempo de qualidade?',
     options: [
-      'Sinto desejo e conexão natural.',
-      'Sinto que o cansaço apaga qualquer vontade que eu tenha.',
-      'Sinto uma barreira invisível (prefiro ficar no meu canto).'
+      'Temos facilidade em cultivar nossos momentos e a nossa intimidade.',
+      'A exaustão tem nos feito adiar esses momentos.',
+      'Sinto que existe um certo distanciamento e dificuldade na convivência.'
     ]
   },
   {
-    id: 'emotional_reactivity',
-    question: 'Quando surge um imprevisto ou uma pequena falha do parceiro, qual sua reação?',
+    id: 'longevity_expectation',
+    question: 'Pensando na longevidade da sua relação, qual é a sua principal busca nesse momento?',
     options: [
-      'Lido com calma e bom humor.',
-      'Fico impaciente, mas tento disfarçar.',
-      'Explodo ou guardo ressentimento (meus nervos estão à flor da pele).'
+      'Apenas preservar o que construímos.',
+      'Resgatar a conexão e a energia que foram sendo minadas com o tempo.',
+      'Aprender algo comprovado que elimine o desgaste da nossa convivência e traga uma vida mais harmoniosa.'
     ]
   },
   {
-    id: 'ancestral_knowledge',
-    question: 'Você já tentou dietas ou conversas difíceis para melhorar sua energia e o seu relacionamento, sem sucesso duradouro?',
+    id: 'previous_attempts',
+    question: 'Você já sentiu que simples "dicas de relacionamento" ou conversas exaustivas não resolvem problemas de estresse?',
     options: [
-      'Sim, já tentei de tudo e nada mudou.',
-      'Tentei algumas coisas, mas o efeito passou rápido.',
-      'Nunca tentei nada específico, apenas aceitei que "é assim mesmo".'
+      'Sim, as tentativas comuns costumam ser temporárias.',
+      'Já tentei mudar a forma de agir, mas foi difícil manter a constância.',
+      'Nunca busquei métodos profundos baseados em harmonia física e mental para ajudar na relação.'
     ]
   }
 ];
@@ -103,27 +103,27 @@ function SalesPage() {
     let impactText = "";
 
     if (score < 4) {
-      severityLevel = "Alerta Primário de Desequilíbrio Interno";
-      impactText = "um acúmulo de tensões iniciais, que pode começar a afetar o seu bem-estar diário";
+      severityLevel = "Alerta Leve de Distanciamento";
+      impactText = "um acúmulo de tensões iniciais, que já começou a esfriar um pouco a sua conexão a dois";
     } else if (score < 9) {
-      severityLevel = "Bloqueio Moderado de Energia";
-      impactText = "uma sobrecarga de rotina que está limitando a sua vitalidade e dificultando uma conexão mais leve e natural";
+      severityLevel = "Desgaste Moderado na Rotina";
+      impactText = "uma sobrecarga de rotina que está limitando as suas demonstrações de carinho e dificultando uma convivência mais leve no relacionamento";
     } else {
-      severityLevel = "Sinal Máximo: Restrição de Magnetismo";
-      impactText = "uma forte sobrecarga interna acumulada, o que frequentemente resulta na sensação de exaustão constante e no distanciamento nas relações";
+      severityLevel = "Sinal Máximo: Risco Crítico de Desgaste Relacional";
+      impactText = "uma forte exaustão interna acumulada, o que frequentemente resulta em respostas ríspidas, perda de intimidade e um forte distanciamento emocional do parceiro";
     }
 
     setDiagnosis({ severity: severityLevel, impact: impactText });
 
     setIsGenerating(true);
-    setLoadingMessage('Analisando suas respostas...');
+    setLoadingMessage('Analisando momento do relacionamento...');
     
     setTimeout(() => {
-      setLoadingMessage('Verificando níveis de inflamação...');
+      setLoadingMessage('Verificando os níveis de desgaste da rotina...');
     }, 1500);
 
     setTimeout(() => {
-      setLoadingMessage(`Gerando protocolo personalizado para ${userName}...`);
+      setLoadingMessage(`Gerando o protocolo de reconexão para ${userName}...`);
     }, 3000);
 
     setTimeout(() => {
@@ -265,7 +265,7 @@ function SalesPage() {
           <div className="bg-white p-8 md:p-12 border-4 border-red-600 rounded-xl shadow-2xl text-center">
             <h2 className="text-2xl font-bold text-gray-600 mb-2 uppercase">Atenção {userName ? `${userName}, ` : ''}Resultado Concluído</h2>
             <h1 className="text-3xl md:text-5xl font-serif font-black text-cb-red leading-tight mb-8">
-              Identificamos um {diagnosis.severity || 'Bloqueio Grave de Magnetismo'}
+              Identificamos um {diagnosis.severity || 'Risco de Desgaste Relacional'}
             </h1>
             
             <div className="text-left text-xl space-y-6 mb-10 bg-yellow-50 p-6 border-l-4 border-yellow-400">
@@ -276,10 +276,10 @@ function SalesPage() {
                 O seu sistema indicou <strong>{diagnosis.impact || "o efeito do acúmulo de tensão diária"}</strong>.
               </p>
               <p>
-                A boa notícia é que você não precisa de mais cobranças ou de dietas restritivas. O que você precisa é reativar as vias bloqueadas do seu corpo.
+                A boa notícia é que você não precisa de mais cobranças, discussões desgastantes ou terapias intermináveis. O que você precisa é agir na base da sua convivência.
               </p>
               <p className="font-bold text-cb-red">
-                Preparamos uma apresentação urgente que revela como você pode começar a reverter isso ainda hoje, em apenas 30 segundos.
+                Preparamos uma apresentação urgente que revela como você pode começar a reverter isso ainda hoje aplicando pequenos hábitos de harmonia.
               </p>
             </div>
 
@@ -287,7 +287,7 @@ function SalesPage() {
               onClick={() => setShowContent(true)}
               className="btn-cta-cb"
             >
-              ASSISTIR AO VÍDEO AGORA &raquo;
+              LER A APRESENTAÇÃO AGORA &raquo;
             </button>
           </div>
         </div>
@@ -295,40 +295,19 @@ function SalesPage() {
 
       {showContent && (
         <div className="relative z-10 pb-20">
-          {/* ─── VSL SECTION ─────────────────────────────── */}
-          <section className="pt-10 pb-16 px-4 bg-white">
+          {/* ─── TITLE SECTION ─────────────────────────────── */}
+          <section className="pt-10 pb-8 px-4 bg-white">
             <div className="container-custom text-center">
               <h1 className="text-4xl md:text-6xl font-serif font-black text-cb-red leading-tight mb-4">
-                O Segredo Simples Para Estimular Seu Magnetismo Natural...
+                O Código da Convivência Harmoniosa: O Segredo de Bama Para Resgatar a Admiração Mútua
               </h1>
               <h2 className="text-2xl md:text-3xl font-bold text-black mb-8">
-                E a adoção de pequenos <span className="highlight-yellow">hábitos matinais</span> que ajudam a renovar o seu bem-estar.
+                Descubra como os princípios dessa vila isolada podem ajudar a eliminar o desgaste da rotina e <span className="highlight-yellow">renovar o seu relacionamento</span>.
               </h2>
               
-              <p className="text-lg font-bold text-gray-600 mb-4">
-                Recomendamos que assista com o som ativado para aproveitar melhor a apresentação. Aguarde alguns segundos para o carregamento do vídeo.
-              </p>
-
-              {/* VSL Video Player */}
-              <div className="vsl-container overflow-hidden rounded-lg relative">
-                <iframe
-                  src="https://player.mediadelivery.net/play/639325/3f840c7e-919e-4ba8-9bf7-413fe909d4b5?autoplay=true"
-                  loading="lazy"
-                  style={{ border: 0, position: 'absolute', top: 0, left: 0, height: '100%', width: '100%' }}
-                  allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;"
-                  allowFullScreen={true}
-                ></iframe>
-                {/* Overlay transparente para bloquear a barra de progresso e controles inferiores */}
-                <div 
-                  className="absolute bottom-0 left-0 w-full h-16 md:h-20 z-20 bg-transparent cursor-not-allowed"
-                  title="O vídeo não pode ser adiantado."
-                  style={{ userSelect: 'none' }}
-                ></div>
-              </div>
-
               <div className="mt-10">
                 <a href="https://pay.hotmart.com/L105426143X?checkoutMode=10" className="btn-cta-cb text-2xl py-6">
-                  SIM! QUERO DESBLOQUEAR MEU MAGNETISMO AGORA
+                  SIM! QUERO APLICAR O PROTOCOLO DE BAMA NA MINHA ROTINA
                 </a>
                 <img src="https://cdn.clickbank.net/custom/images/trust_seals/secure_checkout.png" alt="Secure Checkout" className="mx-auto mt-4 h-12 opacity-50 grayscale" />
               </div>
@@ -340,14 +319,14 @@ function SalesPage() {
             <div className="container-custom text-lg md:text-xl leading-relaxed space-y-8">
               
               <h2 className="text-3xl md:text-4xl font-serif font-black text-black text-center mb-10">
-                A Busca Por Mais Leveza e Conexão Real
+                A Busca Pela Convivência Harmoniosa
               </h2>
 
               <p>
-                Muitas vezes, a rotina corrida pode gerar uma sensação de desgaste. Fica parecendo que há um obstáculo limitando a forma de aproveitar as relações diárias.
+                Muitas vezes, a rotina corrida pode gerar uma sensação de desgaste dentro de casa. Fica parecendo que há um obstáculo limitando a forma de aproveitar as relações diárias e o tempo a dois.
               </p>
               <p>
-                Ainda que exista o desejo por um dia a dia mais tranquilo e conexões mais profundas, a sobrecarga de tarefas muitas vezes toma a frente.
+                Ainda que exista o desejo por um dia a dia mais tranquilo, focado no amor e conexões mais profundas, a sobrecarga de tarefas muitas vezes toma a frente, esfriando a admiração mútua.
               </p>
 
               <ul className="pain-list bg-white p-8 border border-gray-200 rounded-lg shadow-sm">
@@ -363,15 +342,15 @@ function SalesPage() {
               <hr className="my-12 border-gray-300" />
 
               <h2 className="text-3xl md:text-4xl font-serif font-black text-cb-red text-center mb-8">
-                O Segredo das Mulheres Magnéticas Centenárias de Bama
+                O Código Oculto da Vila de Bama
               </h2>
 
               <p>
-                Nas montanhas isoladas da China na Vila de Bama em Guangxi, existe um lugar onde o tempo parece não ter poder sobre o desejo. Cientistas descobriram algo que vai muito além da longevidade: eles encontraram o segredo do magnetismo feminino inesgotável.
+                No topo das montanhas da China, na isolada Vila de Bama em Guangxi, existe um segredo para a longevidade que vai muito além da alimentação. Trata-se do verdadeiro código da convivência harmoniosa.
               </p>
 
               <p>
-                Enquanto em centros urbanos muitas vezes o estresse dita a vitalidade, as mulheres de Bama exibem uma atenção aos cuidados que promovem uma pele bem cuidada, olhar expressivo e uma sensação de energia positiva no ambiente de forma muito natural.
+                Enquanto em centros urbanos muitas vezes o estresse dita a vitalidade do casal, os habitantes de Bama exibem uma atenção aos cuidados que promovem o amor duradouro, um olhar muito mais humano e uma sensação de energia positiva no ambiente de forma muito natural.
               </p>
 
               <p>
@@ -423,11 +402,11 @@ function SalesPage() {
               <hr className="my-12 border-gray-300" />
 
               <h2 className="text-3xl md:text-4xl font-serif font-black text-black text-center mb-8">
-                A Solução: O Protocolo de Bama
+                A Solução: O Protocolo de Bama Para Casais
               </h2>
 
               <p>
-                Este não é um livro de dicas comuns. É um manual de harmonização corporal. Em 7 capítulos práticos, você vai aprender a equilibrar seu corpo e reativar a sua confiança de dentro para fora.
+                Este não é um livro de dicas comuns. É um manual de harmonização da rotina. Em 7 capítulos práticos, você vai aprender a equilibrar seu ambiente e cultivar a admiração de dentro para fora.
               </p>
 
               <ul className="check-list bg-white p-8 border border-green-500 rounded-lg shadow-sm my-8">
@@ -445,7 +424,7 @@ function SalesPage() {
               <hr className="my-12 border-gray-300" />
 
               <h2 className="text-3xl md:text-4xl font-serif font-black text-black text-center mb-8">
-                Histórias Reais de Mulheres que Recuperaram o Magnetismo
+                Histórias Reais de Quem Transformou Sua Rotina
               </h2>
 
               <div className="space-y-6">
