@@ -160,11 +160,6 @@ function SalesPage() {
 
   return (
     <div className="font-sans text-[#111] bg-white min-h-screen relative overflow-x-hidden">
-      {/* Sticky urgency bar */}
-      {showContent && (
-        <div className="sticky-bar">O conteúdo deste vídeo estará disponível por tempo limitado. Assista agora.</div>
-      )}
-
       {!showContent && !isGenerating && !showResult && (
         <div className="max-w-[800px] mx-auto px-4 py-12">
           {!quizStarted ? (
@@ -304,14 +299,14 @@ function SalesPage() {
           <section className="pt-10 pb-16 px-4 bg-white">
             <div className="container-custom text-center">
               <h1 className="text-4xl md:text-6xl font-serif font-black text-cb-red leading-tight mb-4">
-                O "Lodo Invisível" Que Está Apagando Seu Magnetismo Natural...
+                O Segredo Simples Para Estimular Seu Magnetismo Natural...
               </h1>
               <h2 className="text-2xl md:text-3xl font-bold text-black mb-8">
-                E o protocolo matinal de <span className="highlight-yellow">30 segundos</span> que ajuda a despertar o seu corpo e estimular o seu magnetismo natural.
+                E a adoção de pequenos <span className="highlight-yellow">hábitos matinais</span> que ajudam a renovar o seu bem-estar.
               </h2>
               
               <p className="text-lg font-bold text-gray-600 mb-4">
-                Certifique-se de que seu som está ligado! Aguarde até 10 segundos para o carregamento do vídeo.
+                Recomendamos que assista com o som ativado para aproveitar melhor a apresentação. Aguarde alguns segundos para o carregamento do vídeo.
               </p>
 
               {/* VSL Video Player */}
@@ -345,24 +340,24 @@ function SalesPage() {
             <div className="container-custom text-lg md:text-xl leading-relaxed space-y-8">
               
               <h2 className="text-3xl md:text-4xl font-serif font-black text-black text-center mb-10">
-                Muitas mulheres sentem que a rotina apaga o seu brilho natural
+                A Busca Por Mais Leveza e Conexão Real
               </h2>
 
               <p>
-                É comum sentir que, mesmo se esforçando, parece haver uma <strong className="text-cb-red">barreira invisível</strong> dificultando a conexão nos relacionamentos.
+                Muitas vezes, a rotina corrida pode gerar uma sensação de desgaste. Fica parecendo que há um obstáculo limitando a forma de aproveitar as relações diárias.
               </p>
               <p>
-                Às vezes, mesmo tentando ser mais carinhosa ou buscando conselhos, a proximidade tão desejada parece não se confirmar.
+                Ainda que exista o desejo por um dia a dia mais tranquilo e conexões mais profundas, a sobrecarga de tarefas muitas vezes toma a frente.
               </p>
 
               <ul className="pain-list bg-white p-8 border border-gray-200 rounded-lg shadow-sm">
-                <li>O cansaço acumulado da rotina pesada, que muitas vezes parece não passar com uma simples noite de sono.</li>
-                <li>A sensação de que a linguagem corporal natural e a vivacidade estão sendo abafadas pelo estresse do dia a dia.</li>
-                <li>A percepção de que a verdadeira essência — leve, luminosa e magnética — está apenas precisando de um estímulo para voltar a brilhar.</li>
+                <li>O acúmulo de tensões diárias, que impacta na sensação de vitalidade ao final do dia.</li>
+                <li>A busca constante por resgatar a autoconfiança de quando a vida parecia fluir em um ritmo mais calmo.</li>
+                <li>A vontade de cuidar melhor do próprio corpo e mente, estimulando tudo de positivo que já existe dentro de cada pessoa.</li>
               </ul>
 
               <p className="text-center font-bold text-2xl mt-8">
-                Isso não é uma falha sua. <span className="highlight-yellow">É o reflexo de um corpo sobrecarregado.</span>
+                Lidar com essas demandas é comum. <span className="highlight-yellow">É um reflexo natural do estresse contemporâneo.</span>
               </p>
 
               <hr className="my-12 border-gray-300" />
@@ -376,31 +371,31 @@ function SalesPage() {
               </p>
 
               <p>
-                Enquanto no resto do mundo as mulheres de 50, 60 ou 70 anos se sentem invisíveis, as mulheres de Bama possuem uma presença que domina qualquer ambiente. Mesmo em idade avançada, elas exibem uma pele que brilha de dentro para fora, olhos vívidos e uma energia que atrai a atenção de forma quase hipnótica.
+                Enquanto em centros urbanos muitas vezes o estresse dita a vitalidade, as mulheres de Bama exibem uma atenção aos cuidados que promovem uma pele bem cuidada, olhar expressivo e uma sensação de energia positiva no ambiente de forma muito natural.
               </p>
 
               <p>
-                O que os pesquisadores mais demoraram a entender foi o impacto disso nos relacionamentos.
+                O que pesquisadores relatam sobre os relacionamentos dessa cultura é o grande foco no equilíbrio.
               </p>
 
               <p>
-                Lá, não existe "esfriamento" ou indiferença. Os homens de Bama permanecem profundamente conectados e devotos às suas parceiras por décadas. Por quê? Porque essas mulheres dominam uma biologia que a mulher moderna esqueceu.
+                No estilo de vida de Bama, o conforto nas relações parece ser constante. Por quê? Porque muito dessa cultura está atrelada à adoção de atitudes biológicas e sociais voltadas para o próprio autocuidado, algo que a pressa ocidental deixou de lado.
               </p>
 
               <p>
-                Elas não precisam implorar por atenção ou usar truques de manipulação. Elas possuem um brilho biológico — um sinal químico emitido por um corpo limpo — que o cérebro masculino é programado para perseguir.
+                Isso não se resume a buscar fórmulas mágicas, mas em encontrar a harmonia biológica básica — um ciclo saudável de um organismo funcionando confortavelmente — que naturalmente ajuda na autoconfiança.
               </p>
 
               <p>
-                O segredo não está em frascos caros de colágeno, mas na erradicação do "Lodo Invisível" (o Biofilme Adeso). Esse lodo é o que "apaga" a sua luz, deixando o seu semblante carregado, sua voz sem vida e o seu corpo emitindo sinais de estresse que, inconscientemente, afastam as pessoas.
+                O foco consiste na busca pelo distanciamento do excesso de estresse diário. Ao adotar hábitos mais serenos, todo o semblante responde de forma favorável, deixando de transparecer aquela tensão e exaustão que pesam no dia a dia.
               </p>
 
               <p>
-                As mulheres de Bama usam um <strong>ritual matinal de apenas 30 segundos</strong> para dissolver essa barreira. No momento em que esse lodo é removido, o magnetismo natural é destravado. É como se uma lâmpada fosse limpa: a luz sempre esteve lá, ela só estava escondida.
+                Acredita-se que as tradições dessa região usem <strong>pequenos hábitos matinais diários</strong> para ajudar a preservar e cultivar essa mesma harmonia corporal. É como limpar uma lente: a cor verdadeira do ambiente volta a ficar evidente.
               </p>
 
               <p>
-                Quando você remove esse "Lodo Invisível", você para de correr atrás da conexão... e passa a ser o centro dela. Você se torna a mulher que não precisa dizer uma palavra para ser notada, desejada e, acima de tudo, priorizada.
+                O foco em hábitos de bem-estar saudáveis apoia diariamente o objetivo de se sentir bem com o próprio reflexo, promovendo assim mais interações e conexões muito mais leves.
               </p>
 
               <hr className="my-12 border-gray-300" />
