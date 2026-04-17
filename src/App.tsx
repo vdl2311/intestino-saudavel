@@ -1,132 +1,136 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import React, { useState, useEffect, useRef } from 'react';
-import { GoogleGenAI } from '@google/genai';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Privacy from './Privacy';
 import Terms from './Terms';
 
 const questions = [
   {
-    id: 'retention',
-    question: 'Você sente que seu corpo retém mais do que deveria após as refeições?',
-    type: 'choice',
-    options: ['Sim', 'Não']
+    id: 'morning_feeling',
+    question: 'Como você se sente nos primeiros 15 minutos após acordar?',
+    options: [
+      'Disposta e com a mente clara.',
+      'Pesada, como se precisasse de mais 5 horas de sono.',
+      'Irritada com o barulho ou com as obrigações do dia.'
+    ]
   },
   {
-    id: 'natural_solutions',
-    question: 'Com que frequência você busca soluções naturais para se sentir mais leve?',
-    type: 'choice',
-    options: ['Sempre', 'Raramente']
+    id: 'vitality_signal',
+    question: 'Ao se olhar no espelho, o que você mais nota no seu rosto ultimamente?',
+    options: [
+      'Um brilho natural e olhar descansado.',
+      'Olheiras persistentes ou pele sem viço ("opaca").',
+      'Inchaço matinal que demora a passar.'
+    ]
   },
   {
-    id: 'age',
-    question: 'Para qual faixa etária devemos ajustar seu protocolo?',
-    type: 'choice',
-    options: ['40-50', '51-60', '60+']
+    id: 'belly_knot',
+    question: 'Com que frequência você sente que sua região abdominal fica "estufada" ou desconfortável após as refeições?',
+    options: [
+      'Raramente, me sinto leve.',
+      'Às vezes, dependendo do que eu como.',
+      'Quase sempre; sinto que meu corpo está "brigando" com a comida.'
+    ]
   },
   {
-    id: 'symptom',
-    question: 'Qual dessas sensações mais te incomoda hoje?',
-    type: 'choice',
-    options: ['Inchaço', 'Cansaço', 'Peso']
+    id: 'relationship_thermometer',
+    question: 'Como está sua disposição para momentos de intimidade e toque com seu parceiro?',
+    options: [
+      'Sinto desejo e conexão natural.',
+      'Sinto que o cansaço apaga qualquer vontade que eu tenha.',
+      'Sinto uma barreira invisível (prefiro ficar no meu canto).'
+    ]
   },
   {
-    id: 'commitment',
-    question: 'Você está disposta a dedicar 30 segundos por dia a um costume milenar de Bama?',
-    type: 'choice',
-    options: ['Sim, quero começar!']
+    id: 'emotional_reactivity',
+    question: 'Quando surge um imprevisto ou uma pequena falha do parceiro, qual sua reação?',
+    options: [
+      'Lido com calma e bom humor.',
+      'Fico impaciente, mas tento disfarçar.',
+      'Explodo ou guardo ressentimento (meus nervos estão à flor da pele).'
+    ]
   },
   {
-    id: 'name',
-    question: 'Quase lá! Para quem devemos enviar o seu Perfil de Vitalidade personalizado?',
-    type: 'text'
+    id: 'ancestral_knowledge',
+    question: 'Você já tentou dietas ou conversas difíceis para melhorar sua energia e o seu relacionamento, sem sucesso duradouro?',
+    options: [
+      'Sim, já tentei de tudo e nada mudou.',
+      'Tentei algumas coisas, mas o efeito passou rápido.',
+      'Nunca tentei nada específico, apenas aceitei que "é assim mesmo".'
+    ]
   }
 ];
 
 function SalesPage() {
-  const [timeLeft, setTimeLeft] = useState(21 * 3600 + 29 * 60 + 57); // 21:29:57 in seconds
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [showSticky, setShowSticky] = useState(false);
-  const [showCta, setShowCta] = useState(true);
+  const [quizStarted, setQuizStarted] = useState(false);
 
-  // Quiz & AI State
+  // Quiz State
   const [quizStep, setQuizStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [userName, setUserName] = useState('');
+  const [diagnosis, setDiagnosis] = useState({ severity: '', impact: '' });
   const [isGenerating, setIsGenerating] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
-  const [diagnosis, setDiagnosis] = useState('');
+  const [showResult, setShowResult] = useState(false);
   const [showContent, setShowContent] = useState(false);
-  const [nameInput, setNameInput] = useState('');
 
   const handleAnswer = async (questionId: string, answer: string) => {
     const newAnswers = { ...answers, [questionId]: answer };
     setAnswers(newAnswers);
 
-    if (quizStep < questions.length - 1) {
+    if (quizStep < questions.length) {
       setQuizStep(quizStep + 1);
-    } else {
-      // Start generation
-      setIsGenerating(true);
-      setLoadingMessage(`A processar dados de ${newAnswers.name || 'você'}...`);
-      
-      const messageTimer = setTimeout(() => {
-        setLoadingMessage('A analisar nível de Biofilme Adeso...');
-      }, 800);
-
-      try {
-        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-        const prompt = `
-          Aja como um especialista em bem-estar e vitalidade.
-          Baseado nas seguintes respostas de um quiz, gere um diagnóstico empático e focado em estilo de vida seguindo EXATAMENTE esta estrutura:
-          
-          "Olá, [Nome]. Com base nas suas respostas, identificamos uma oportunidade de melhoria no seu equilíbrio interno. 
-          Muitas vezes, a sensação de [Sintoma que mais incomoda] e o ritmo irregular do organismo são sinais de que o sistema digestivo precisa de um suporte natural. O acúmulo de resíduos e o desequilíbrio da microbiota podem criar uma barreira que dificulta a absorção de nutrientes essenciais.
-          O Ritual de Bama de 30 segundos é um método desenhado para auxiliar na restauração desse equilíbrio, promovendo um suporte suave e ajudando seu corpo a reencontrar o ritmo natural que você merece."
-
-          Dados da pessoa:
-          Nome: ${newAnswers.name}
-          Retenção após refeições: ${newAnswers.retention}
-          Busca por soluções naturais: ${newAnswers.natural_solutions}
-          Faixa etária: ${newAnswers.age}
-          Sintoma que mais incomoda: ${newAnswers.symptom}
-          Compromisso com 30 seg/dia: ${newAnswers.commitment}
-          
-          IMPORTANTE: Mantenha o tom profissional e educativo. Não use formatação markdown complexa.
-        `;
-
-        const response = await ai.models.generateContent({
-          model: 'gemini-3-flash-preview',
-          contents: prompt,
-        });
-
-        clearTimeout(messageTimer);
-        setDiagnosis(response.text || 'Diagnóstico concluído.');
-        
-        setLoadingMessage('Concluído!');
-        setTimeout(() => {
-          setIsGenerating(false);
-          setShowContent(true);
-        }, 400);
-
-      } catch (error) {
-        console.error("Erro ao gerar diagnóstico:", error);
-        clearTimeout(messageTimer);
-        setDiagnosis(`Olá ${newAnswers.name}. Com base nas suas respostas, identificamos uma oportunidade de melhoria no seu equilíbrio interno. Muitas vezes, a sensação de ${newAnswers.symptom || 'desconforto'} e o ritmo irregular do organismo são sinais de que o sistema digestivo precisa de um suporte natural. O acúmulo de resíduos e o desequilíbrio da microbiota podem criar uma barreira que dificulta a absorção de nutrientes essenciais. O Ritual de Bama de 30 segundos é um método desenhado para auxiliar na restauração desse equilíbrio, promovendo um suporte suave e ajudando seu corpo a reencontrar o ritmo natural que você merece.`);
-        setLoadingMessage('Concluído!');
-        setTimeout(() => {
-          setIsGenerating(false);
-          setShowContent(true);
-        }, 400);
-      }
     }
   };
 
+  const handleNameSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userName.trim()) return;
+
+    // Calcular o nível de alerta baseado nas respostas
+    let score = 0;
+    Object.keys(answers).forEach((qId) => {
+      const q = questions.find(q => q.id === qId);
+      if (q) {
+        const optionIndex = q.options.indexOf(answers[qId]);
+        score += optionIndex;
+      }
+    });
+
+    let severityLevel = "";
+    let impactText = "";
+
+    if (score < 4) {
+      severityLevel = "Alerta Primário de Desequilíbrio Interno";
+      impactText = "um acúmulo de tensões iniciais, que pode começar a afetar o seu bem-estar diário";
+    } else if (score < 9) {
+      severityLevel = "Bloqueio Moderado de Energia";
+      impactText = "uma sobrecarga de rotina que está limitando a sua vitalidade e dificultando uma conexão mais leve e natural";
+    } else {
+      severityLevel = "Sinal Máximo: Restrição de Magnetismo";
+      impactText = "uma forte sobrecarga interna acumulada, o que frequentemente resulta na sensação de exaustão constante e no distanciamento nas relações";
+    }
+
+    setDiagnosis({ severity: severityLevel, impact: impactText });
+
+    setIsGenerating(true);
+    setLoadingMessage('Analisando suas respostas...');
+    
+    setTimeout(() => {
+      setLoadingMessage('Verificando níveis de inflamação...');
+    }, 1500);
+
+    setTimeout(() => {
+      setLoadingMessage(`Gerando protocolo personalizado para ${userName}...`);
+    }, 3000);
+
+    setTimeout(() => {
+      setIsGenerating(false);
+      setShowResult(true);
+    }, 4500);
+  };
 
   useEffect(() => {
     if (showContent) {
@@ -136,8 +140,7 @@ function SalesPage() {
 
   useEffect(() => {
     const handleScroll = () => {
-      // Only show sticky CTA if the main CTA is already visible
-      if (showCta && window.scrollY > 500) {
+      if (showContent && window.scrollY > 800) {
         setShowSticky(true);
       } else {
         setShowSticky(false);
@@ -145,21 +148,7 @@ function SalesPage() {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [showCta]);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const formatTime = (seconds: number) => {
-    const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
-    const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
-    const s = (seconds % 60).toString().padStart(2, '0');
-    return `${h}:${m}:${s}`;
-  };
+  }, [showContent]);
 
   const toggleFaq = (index: number) => {
     if (openFaq === index) {
@@ -170,521 +159,432 @@ function SalesPage() {
   };
 
   return (
-    <div className="font-serif text-[#1a1a1a] bg-[#faf9f6] leading-[1.8] pb-24 min-h-screen">
-      {/* Barra Alerta */}
-      {showContent && showCta && (
-        <div className="bg-[#b91c1c] text-white text-center p-3 font-sans text-[13px] font-bold uppercase tracking-[1px]">
-          ⚠️ OFERTA LIMITADA — Preço especial de lançamento expira em: {formatTime(timeLeft)}
-        </div>
+    <div className="font-sans text-[#111] bg-white min-h-screen relative overflow-x-hidden">
+      {/* Sticky urgency bar */}
+      {showContent && (
+        <div className="sticky-bar">O conteúdo deste vídeo estará disponível por tempo limitado. Assista agora.</div>
       )}
 
-      {!showContent && !isGenerating && (
-        <div className="max-w-[700px] mx-auto px-6 py-12">
-          <div className="text-center mb-10">
-            <h1 className="text-[24px] md:text-[28px] font-black text-[#111] leading-tight mb-4">
-              A Sabedoria Ancestral de Bama para o Equilíbrio Digestivo
-            </h1>
-            <p className="text-lg text-gray-600 font-sans">
-              Descubra como o equilíbrio do sistema digestivo é o pilar central da longevidade dos centenários chineses.
-            </p>
-          </div>
-
-          <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
-            <div className="mb-8">
-              <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-[#16a34a] transition-all duration-500 ease-out"
-                  style={{ width: `${Math.min((quizStep + 1) * 8, 100)}%` }}
-                ></div>
-              </div>
-              <p className="text-center text-sm text-gray-500 mt-2 font-sans uppercase tracking-wider">
-                Pergunta {quizStep + 1} de {questions.length}
+      {!showContent && !isGenerating && !showResult && (
+        <div className="max-w-[800px] mx-auto px-4 py-12">
+          {!quizStarted ? (
+            <div className="text-center bg-white p-8 md:p-12 border-4 border-gray-200 rounded-xl shadow-xl">
+              <h1 className="text-3xl md:text-5xl font-serif font-black text-cb-red leading-tight mb-6">
+                Descubra o que está bloqueando seu magnetismo
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-800 font-bold mb-8">
+                Responda a 6 perguntas rápidas e veja se o seu Nervo Vago está operando em modo de 'Sobrecarga' ou 'Brilho'.
               </p>
-            </div>
-
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={quizStep}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
+              
+              <button
+                onClick={() => setQuizStarted(true)}
+                className="btn-cta-cb"
               >
-                <h2 className="text-2xl font-bold text-center mb-8 text-[#111] leading-tight">
-                  {questions[quizStep].question}
-                </h2>
+                COMEÇAR TESTE AGORA &raquo;
+              </button>
+              <p className="mt-4 text-sm text-gray-500 font-bold">100% Gratuito e Seguro.</p>
+            </div>
+          ) : (
+            <div className="bg-white p-8 md:p-12 border-4 border-gray-200 rounded-xl shadow-xl">
+              <div className="mb-8">
+                <div className="h-4 w-full bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-cb-red transition-all duration-500"
+                    style={{ width: `${Math.min((quizStep + 1) * (100 / (questions.length + 1)), 100)}%` }}
+                  ></div>
+                </div>
+                <div className="text-center mt-2 font-bold text-gray-500">
+                  {quizStep < questions.length ? `Pergunta ${quizStep + 1} de ${questions.length}` : 'Etapa Final'}
+                </div>
+              </div>
 
-                {questions[quizStep].type === 'text' ? (
-                  <div className="flex flex-col gap-4">
-                    <input
-                      type="text"
-                      value={nameInput}
-                      onChange={(e) => setNameInput(e.target.value)}
-                      placeholder="Digite seu nome..."
-                      className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg font-sans focus:border-[#16a34a] focus:outline-none transition-colors"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && nameInput.trim()) {
-                          handleAnswer(questions[quizStep].id, nameInput.trim());
-                        }
-                      }}
-                    />
-                    <button
-                      onClick={() => nameInput.trim() && handleAnswer(questions[quizStep].id, nameInput.trim())}
-                      disabled={!nameInput.trim()}
-                      className="w-full bg-[#16a34a] text-white font-bold py-4 rounded-xl text-lg uppercase tracking-wider disabled:opacity-50 transition-opacity"
-                    >
-                      Continuar
-                    </button>
-                  </div>
+              <AnimatePresence mode="wait">
+                {quizStep < questions.length ? (
+                  <motion.div
+                    key={quizStep}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <h2 className="text-2xl md:text-3xl font-serif font-bold text-center mb-8 text-black">
+                      {questions[quizStep].question}
+                    </h2>
+
+                    <div className="flex flex-col gap-4">
+                      {questions[quizStep].options?.map((option, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => handleAnswer(questions[quizStep].id, option)}
+                          className="w-full text-left p-4 border-2 border-gray-300 rounded-lg text-xl font-bold bg-gray-50 hover:bg-yellow-50 hover:border-yellow-400 transition-all"
+                        >
+                          {option}
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
                 ) : (
-                  <div className="flex flex-col gap-3">
-                    {questions[quizStep].options?.map((option, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => handleAnswer(questions[quizStep].id, option)}
-                        className="w-full text-left p-4 border-2 border-gray-200 rounded-xl text-lg font-sans hover:border-[#16a34a] hover:bg-green-50 transition-all"
-                      >
-                        {option}
+                  <motion.div
+                    key="name-step"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <h2 className="text-2xl md:text-3xl font-serif font-bold text-center mb-6 text-black">
+                      Para finalizar e gerar seu diagnóstico personalizado, qual o seu primeiro nome?
+                    </h2>
+                    <form onSubmit={handleNameSubmit} className="flex flex-col gap-4">
+                      <input 
+                        type="text" 
+                        value={userName} 
+                        onChange={(e) => setUserName(e.target.value)} 
+                        placeholder="Digite seu nome aqui" 
+                        className="w-full p-4 border-2 border-gray-300 rounded-lg text-xl font-bold focus:border-cb-red focus:outline-none text-center"
+                        required
+                      />
+                      <button type="submit" className="btn-cta-cb mt-4">
+                        GERAR MEU DIAGNÓSTICO &raquo;
                       </button>
-                    ))}
-                  </div>
+                    </form>
+                  </motion.div>
                 )}
-              </motion.div>
-            </AnimatePresence>
-          </div>
+              </AnimatePresence>
+            </div>
+          )}
         </div>
       )}
 
       {isGenerating && (
-        <div className="max-w-[600px] mx-auto px-6 py-32 text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white p-10 rounded-2xl shadow-xl border border-gray-100 flex flex-col items-center"
-          >
-            <div className="w-16 h-16 border-4 border-gray-200 border-t-[#16a34a] rounded-full animate-spin mb-6"></div>
-            <h2 className="text-2xl font-bold text-[#111] mb-2">Analisando seu perfil...</h2>
-            <p className="text-lg text-[#666] font-sans animate-pulse">{loadingMessage}</p>
-          </motion.div>
+        <div className="max-w-[600px] mx-auto px-4 py-32 text-center">
+          <div className="bg-white p-12 border-4 border-gray-200 rounded-xl shadow-xl">
+            <div className="text-6xl mb-6 animate-spin">⏳</div>
+            <h2 className="text-3xl font-serif font-black text-black mb-4">Analisando...</h2>
+            <p className="text-xl font-bold text-cb-red">{loadingMessage}</p>
+          </div>
+        </div>
+      )}
+
+      {showResult && !showContent && (
+        <div className="max-w-[800px] mx-auto px-4 py-12">
+          <div className="bg-white p-8 md:p-12 border-4 border-red-600 rounded-xl shadow-2xl text-center">
+            <h2 className="text-2xl font-bold text-gray-600 mb-2 uppercase">Atenção {userName ? `${userName}, ` : ''}Resultado Concluído</h2>
+            <h1 className="text-3xl md:text-5xl font-serif font-black text-cb-red leading-tight mb-8">
+              Identificamos um {diagnosis.severity || 'Bloqueio Grave de Magnetismo'}
+            </h1>
+            
+            <div className="text-left text-xl space-y-6 mb-10 bg-yellow-50 p-6 border-l-4 border-yellow-400">
+              <p>
+                <strong>{userName || 'Você'}</strong>, o cruzamento das suas respostas confirmou a verdadeira causa raiz.
+              </p>
+              <p>
+                O seu sistema indicou <strong>{diagnosis.impact || "o efeito do acúmulo de tensão diária"}</strong>.
+              </p>
+              <p>
+                A boa notícia é que você não precisa de mais cobranças ou de dietas restritivas. O que você precisa é reativar as vias bloqueadas do seu corpo.
+              </p>
+              <p className="font-bold text-cb-red">
+                Preparamos uma apresentação urgente que revela como você pode começar a reverter isso ainda hoje, em apenas 30 segundos.
+              </p>
+            </div>
+
+            <button
+              onClick={() => setShowContent(true)}
+              className="btn-cta-cb"
+            >
+              ASSISTIR AO VÍDEO AGORA &raquo;
+            </button>
+          </div>
         </div>
       )}
 
       {showContent && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          {/* Diagnosis Section */}
-          <div className="py-[40px] bg-white">
-            <div className="max-w-[900px] mx-auto px-6">
-              <div className="bg-[#f8fafc] border-l-4 border-[#16a34a] p-8 rounded-r-2xl shadow-sm mb-8">
-                <h3 className="text-[#16a34a] font-sans font-bold text-[14px] uppercase tracking-widest mb-4 flex items-center gap-2">
-                  <span className="text-xl">📋</span> SEU DIAGNÓSTICO PERSONALIZADO
-                </h3>
-                <div className="text-[18px] text-[#333] leading-relaxed whitespace-pre-wrap font-sans">
-                  {diagnosis}
-                </div>
-              </div>
-            </div>
-          </div>
+        <div className="relative z-10 pb-20">
+          {/* ─── VSL SECTION ─────────────────────────────── */}
+          <section className="pt-10 pb-16 px-4 bg-white">
+            <div className="container-custom text-center">
+              <h1 className="text-4xl md:text-6xl font-serif font-black text-cb-red leading-tight mb-4">
+                O "Lodo Invisível" Que Está Apagando Seu Magnetismo Natural...
+              </h1>
+              <h2 className="text-2xl md:text-3xl font-bold text-black mb-8">
+                E o protocolo matinal de <span className="highlight-yellow">30 segundos</span> que ajuda a despertar o seu corpo e estimular o seu magnetismo natural.
+              </h2>
+              
+              <p className="text-lg font-bold text-gray-600 mb-4">
+                Certifique-se de que seu som está ligado! Aguarde até 10 segundos para o carregamento do vídeo.
+              </p>
 
-          {/* Hero Section */}
-          <div className="pb-[60px] bg-white">
-            <div className="max-w-[900px] mx-auto px-6 text-center">
-              <div style={{ textAlign: 'center', fontFamily: "'Helvetica', 'Arial', sans-serif", maxWidth: '900px', margin: '0 auto', padding: '20px' }}>
-                <h3 style={{ color: '#CC0000', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '10px', textTransform: 'uppercase' }}>
-                  A VERDADE SOBRE AS FIBRAS
-                </h3>
-                <h2 style={{ color: '#1a1a1a', fontSize: '2rem', fontWeight: 800, lineHeight: 1.2, marginBottom: '20px' }}>
-                  Por que apenas comer mais fibras pode não ser o suficiente para você?
-                </h2>
-                <p style={{ color: '#444', fontSize: '1.4rem', lineHeight: 1.5, marginBottom: '25px' }}>
-                  Se o seu sistema estiver sobrecarregado, o excesso de fibras secas pode acabar gerando mais desconforto em vez de alívio. Entenda como o <span style={{ backgroundColor: '#ffff00', fontWeight: 'bold' }}>"Código de Bama"</span> atua preparando o seu organismo para processar os alimentos de forma eficiente, removendo o que impede o seu bem-estar diário.
-                </p>
-                <h4 style={{ color: '#000', fontSize: '1.3rem', fontWeight: 600, borderTop: '1px dashed #ccc', borderBottom: '1px dashed #ccc', padding: '15px 0' }}>
-                  Menos peso, mais energia e um corpo que obedece aos seus comandos. <br />
-                  <span style={{ color: '#CC0000' }}>Destrave seu equilíbrio hoje mesmo.</span>
-                </h4>
+              {/* VSL Video Player */}
+              <div className="vsl-container overflow-hidden rounded-lg relative">
+                <iframe
+                  src="https://player.mediadelivery.net/play/639325/3f840c7e-919e-4ba8-9bf7-413fe909d4b5?autoplay=true"
+                  loading="lazy"
+                  style={{ border: 0, position: 'absolute', top: 0, left: 0, height: '100%', width: '100%' }}
+                  allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;"
+                  allowFullScreen={true}
+                ></iframe>
+                {/* Overlay transparente para bloquear a barra de progresso e controles inferiores */}
+                <div 
+                  className="absolute bottom-0 left-0 w-full h-16 md:h-20 z-20 bg-transparent cursor-not-allowed"
+                  title="O vídeo não pode ser adiantado."
+                  style={{ userSelect: 'none' }}
+                ></div>
               </div>
 
-          {showCta && (
-            <>
-              <div id="cta-wrapper" className="mt-8">
-                <a href="https://pay.hotmart.com/M105084214G?checkoutMode=10" className="btn-buy">
-                  QUERO O PROTOCOLO DE BAMA AGORA!
+              <div className="mt-10">
+                <a href="https://pay.hotmart.com/L105426143X?checkoutMode=10" className="btn-cta-cb text-2xl py-6">
+                  SIM! QUERO DESBLOQUEAR MEU MAGNETISMO AGORA
                 </a>
-                <p style={{ fontFamily: 'sans-serif', color: '#666', marginTop: '15px', fontSize: '0.9rem' }}>
-                  ✅ Acesso imediato • 7 dias de garantia total
-                </p>
+                <img src="https://cdn.clickbank.net/custom/images/trust_seals/secure_checkout.png" alt="Secure Checkout" className="mx-auto mt-4 h-12 opacity-50 grayscale" />
               </div>
-            </>
-          )}
-        </div>
-      </div>
+            </div>
+          </section>
 
-      {showCta && (
-        <>
-          <div className="py-[80px] bg-[#f8fafc]">
-            <div className="max-w-[680px] mx-auto px-6">
-              <div className="text-center mb-12">
-                <p className="text-[#16a34a] font-sans font-bold text-[14px] uppercase tracking-widest mb-2">O Equilíbrio que seu Corpo Busca</p>
-                <h2 className="text-[32px] font-extrabold text-[#111] leading-tight">Muitas pessoas sentem que o corpo não responde mais com a mesma leveza de antes</h2>
+          {/* ─── TEXT SALES LETTER ───────────────────────────── */}
+          <section className="py-12 bg-gray-50 border-t border-gray-200">
+            <div className="container-custom text-lg md:text-xl leading-relaxed space-y-8">
+              
+              <h2 className="text-3xl md:text-4xl font-serif font-black text-black text-center mb-10">
+                Muitas mulheres sentem que a rotina apaga o seu brilho natural
+              </h2>
+
+              <p>
+                É comum sentir que, mesmo se esforçando, parece haver uma <strong className="text-cb-red">barreira invisível</strong> dificultando a conexão nos relacionamentos.
+              </p>
+              <p>
+                Às vezes, mesmo tentando ser mais carinhosa ou buscando conselhos, a proximidade tão desejada parece não se confirmar.
+              </p>
+
+              <ul className="pain-list bg-white p-8 border border-gray-200 rounded-lg shadow-sm">
+                <li>O cansaço acumulado da rotina pesada, que muitas vezes parece não passar com uma simples noite de sono.</li>
+                <li>A sensação de que a linguagem corporal natural e a vivacidade estão sendo abafadas pelo estresse do dia a dia.</li>
+                <li>A percepção de que a verdadeira essência — leve, luminosa e magnética — está apenas precisando de um estímulo para voltar a brilhar.</li>
+              </ul>
+
+              <p className="text-center font-bold text-2xl mt-8">
+                Isso não é uma falha sua. <span className="highlight-yellow">É o reflexo de um corpo sobrecarregado.</span>
+              </p>
+
+              <hr className="my-12 border-gray-300" />
+
+              <h2 className="text-3xl md:text-4xl font-serif font-black text-cb-red text-center mb-8">
+                O Segredo das Mulheres Magnéticas Centenárias de Bama
+              </h2>
+
+              <p>
+                Nas montanhas isoladas da China na Vila de Bama em Guangxi, existe um lugar onde o tempo parece não ter poder sobre o desejo. Cientistas descobriram algo que vai muito além da longevidade: eles encontraram o segredo do magnetismo feminino inesgotável.
+              </p>
+
+              <p>
+                Enquanto no resto do mundo as mulheres de 50, 60 ou 70 anos se sentem invisíveis, as mulheres de Bama possuem uma presença que domina qualquer ambiente. Mesmo em idade avançada, elas exibem uma pele que brilha de dentro para fora, olhos vívidos e uma energia que atrai a atenção de forma quase hipnótica.
+              </p>
+
+              <p>
+                O que os pesquisadores mais demoraram a entender foi o impacto disso nos relacionamentos.
+              </p>
+
+              <p>
+                Lá, não existe "esfriamento" ou indiferença. Os homens de Bama permanecem profundamente conectados e devotos às suas parceiras por décadas. Por quê? Porque essas mulheres dominam uma biologia que a mulher moderna esqueceu.
+              </p>
+
+              <p>
+                Elas não precisam implorar por atenção ou usar truques de manipulação. Elas possuem um brilho biológico — um sinal químico emitido por um corpo limpo — que o cérebro masculino é programado para perseguir.
+              </p>
+
+              <p>
+                O segredo não está em frascos caros de colágeno, mas na erradicação do "Lodo Invisível" (o Biofilme Adeso). Esse lodo é o que "apaga" a sua luz, deixando o seu semblante carregado, sua voz sem vida e o seu corpo emitindo sinais de estresse que, inconscientemente, afastam as pessoas.
+              </p>
+
+              <p>
+                As mulheres de Bama usam um <strong>ritual matinal de apenas 30 segundos</strong> para dissolver essa barreira. No momento em que esse lodo é removido, o magnetismo natural é destravado. É como se uma lâmpada fosse limpa: a luz sempre esteve lá, ela só estava escondida.
+              </p>
+
+              <p>
+                Quando você remove esse "Lodo Invisível", você para de correr atrás da conexão... e passa a ser o centro dela. Você se torna a mulher que não precisa dizer uma palavra para ser notada, desejada e, acima de tudo, priorizada.
+              </p>
+
+              <hr className="my-12 border-gray-300" />
+
+              <h2 className="text-3xl md:text-4xl font-serif font-black text-cb-red text-center mb-8">
+                O Impacto do Acúmulo de Tensões e Impurezas
+              </h2>
+
+              <p>
+                Com o passar do tempo, nosso corpo pode acumular resíduos e tensões invisíveis, que dificultam o funcionamento ideal do nosso equilíbrio biológico.
+              </p>
+
+              <div className="bg-white p-8 border-l-8 border-cb-red shadow-md my-8">
+                <ul className="pain-list">
+                  <li><strong>Dificulta a vitalidade natural</strong>, afetando a aparência descansada da pele e a sensação de renovação.</li>
+                  <li><strong>Desequilibra as emoções</strong>, limitando a sensação de alegria, presença e leveza no dia a dia.</li>
+                  <li><strong>Sobrecarrega o bem-estar</strong>, abafando aquela confiança natural e a linguagem corporal magnética.</li>
+                </ul>
               </div>
-          <p className="text-[19px] mb-[30px] text-[#333]">
-            Se você percebe que sua rotina digestiva está irregular, existe uma explicação baseada no equilíbrio da sua microbiota. Não se trata de falta de disciplina, mas sim de como seu organismo processa o que você consome.
-          </p>
 
-          <ul className="space-y-4 mb-10 font-sans text-[16px] text-[#444]">
-            <li className="flex items-start gap-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-              <span className="text-[#16a34a] font-bold mt-1">✓</span>
-              <p className="m-0"><b>Desconforto Abdominal:</b> Entenda por que a sensação de inchaço pode surgir mesmo após refeições leves.</p>
-            </li>
-            <li className="flex items-start gap-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-              <span className="text-[#16a34a] font-bold mt-1">✓</span>
-              <p className="m-0"><b>O Papel das Fibras:</b> Descubra quando o excesso de fibras pode estar sobrecarregando seu sistema em vez de ajudar.</p>
-            </li>
-            <li className="flex items-start gap-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-              <span className="text-[#16a34a] font-bold mt-1">✓</span>
-              <p className="m-0"><b>Vitalidade Diária:</b> Recupere a disposição natural que um sistema digestivo equilibrado proporciona.</p>
-            </li>
-            <li className="flex items-start gap-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-              <span className="text-[#16a34a] font-bold mt-1">✓</span>
-              <p className="m-0"><b>Leveza e Ritmo:</b> Ajude seu corpo a reencontrar a regularidade de forma natural e suave.</p>
-            </li>
-          </ul>
+              <p className="text-center text-2xl font-bold">
+                As pessoas ao redor não veem esse desgaste. <strong className="text-cb-red">Mas elas sentem.</strong>
+              </p>
 
-          <div className="bg-[#1c3557] text-white p-8 rounded-2xl shadow-lg mb-8 relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-2 h-full bg-[#f6c445]"></div>
-            <p className="text-[22px] font-bold italic leading-snug m-0">
-              "Muitas pessoas sentem que o corpo não responde mais como antes, mesmo mantendo uma dieta saudável. Estudos indicam que o acúmulo natural de resíduos pode criar uma barreira no sistema digestivo, dificultando a absorção de nutrientes."
-            </p>
-          </div>
+              <hr className="my-12 border-gray-300" />
 
-          <p className="text-[19px] mb-[20px] text-[#333]">
-            O acúmulo natural de resíduos nas paredes do sistema digestivo pode criar uma barreira que dificulta a absorção de nutrientes essenciais. Esse desequilíbrio pode afetar o ritmo do seu organismo.
-          </p>
-          <p className="text-[19px] text-[#333] bg-[#f0fdf4] p-5 rounded-xl border border-[#bbf7d0]">
-            O <b>Protocolo de Bama</b> foca em auxiliar na restauração desse equilíbrio, promovendo um suporte natural e profundo através de rituais milenares.
-          </p>
-        </div>
-      </div>
+              <h2 className="text-3xl md:text-4xl font-serif font-black text-black text-center mb-8">
+                A Solução: O Protocolo de Bama
+              </h2>
 
-      {/* Discovery Section */}
-      <div className="py-[80px] bg-white">
-        <div className="max-w-[680px] mx-auto px-6">
-          <div className="text-center mb-12">
-            <p className="text-[#16a34a] font-sans font-bold text-[14px] uppercase tracking-widest mb-2">A descoberta que mudou tudo</p>
-            <h2 className="text-[32px] font-extrabold text-[#111] leading-tight">Nas montanhas remotas da China, a vitalidade tem outra cara</h2>
-          </div>
+              <p>
+                Este não é um livro de receitas comum. É um manual de recalibragem biológica. Em 7 capítulos práticos, você vai aprender a dissolver o Biofilme e reativar o seu magnetismo de dentro para fora.
+              </p>
 
-          <p className="text-[19px] mb-[20px] text-[#333]">
-            Na vila de Bama, província de Guangxi, existe a maior concentração de centenários por metro quadrado do planeta. Homens e mulheres de 100, 110 anos que carregam a lenha, caminham pelas trilhas e dormem como crianças.
-          </p>
-          <p className="text-[19px] mb-[20px] text-[#333]">
-            O que intriga especialistas do mundo inteiro não é apenas a longevidade — é a qualidade do bem-estar digestivo dessas pessoas. Elas não conhecem constipação. Não conhecem inchaço. Não conhecem o "peso" abdominal que para você parece normal.
-          </p>
-          <p className="text-[19px] mb-[20px] text-[#333]">
-            A resposta está em uma herança invisível preservada pelo isolamento geográfico: a <b>Microbiota Ancestral</b>. Uma "floresta tropical" de micro-organismos — especialmente o <i>Lactobacillus reuteri</i> — que a civilização moderna destruiu com ultraprocessados, antibióticos e estresse crônico.
-          </p>
-          <p className="text-[19px] mb-[20px] text-[#333]">
-            Estudos genômicos com esses centenários revelaram que o intestino deles produz quantidades extraordinárias de butirato — o "combustível premium" que lubrifica o trânsito, fortalece a barreira intestinal e mantém o Nervo Vago tônico e ativo.
-          </p>
-          
-          <div className="bg-[#f0fdf4] p-6 rounded-2xl border border-[#bbf7d0] my-8">
-            <h3 className="font-bold text-[#166534] text-[20px] mb-3">O Nervo Vago:</h3>
-            <p className="text-[#15803d] m-0">
-              O cabo de comunicação entre seu cérebro e seu intestino. Quando ele está em equilíbrio, o sistema flui naturalmente. Quando o estresse e o acúmulo de resíduos o influenciam — surge aquela sensação de desconforto que muitos conhecem.
-            </p>
-          </div>
+              <ul className="check-list bg-white p-8 border border-green-500 rounded-lg shadow-sm my-8">
+                <li><strong>O Ritual de 30 Segundos:</strong> A técnica matinal exata para despertar o seu Nervo Vago.</li>
+                <li><strong>O Gel Vassoura:</strong> Como preparar o composto ancestral que "varre" o lodo intestinal.</li>
+                <li><strong>A Linguagem do Corpo:</strong> Como sua nova biologia vai mudar sua voz e seu olhar automaticamente.</li>
+              </ul>
 
-          <p className="text-[22px] font-bold text-[#111] leading-snug text-center mt-10">
-            O Protocolo de Bama é a tradução prática desse segredo milenar: 14 dias estruturados para auxiliar na restauração da microbiota ancestral e promover o equilíbrio do Nervo Vago — suportando o ritmo natural que o seu corpo merece.
-          </p>
-        </div>
-      </div>
+              <div className="text-center my-12">
+                <a href="https://pay.hotmart.com/L105426143X?checkoutMode=10" className="btn-cta-cb">
+                  QUERO O PROTOCOLO DE BAMA AGORA
+                </a>
+              </div>
 
-      {/* Chapters Section */}
-      <div className="py-[80px] bg-[#1c3557] text-white">
-        <div className="max-w-[680px] mx-auto px-6">
-          <div className="text-center mb-12">
-            <p className="text-[#f6c445] font-sans font-bold text-[14px] uppercase tracking-widest mb-2">O que você vai aprender</p>
-            <h2 className="text-[32px] font-extrabold leading-tight">Sete capítulos. Um método para auxiliar no seu equilíbrio natural.</h2>
-            <p className="text-[#9cb3cc] mt-4 text-[18px]">Cada capítulo termina com um "Resumo de Ação" — passos concretos que você implementa no mesmo dia. Sem teoria sem fim. Sem promessas vazias.</p>
-          </div>
+              <hr className="my-12 border-gray-300" />
 
-          <div className="space-y-6 font-sans">
-            {[
-              { num: "1", title: "O Segredo de Bama", desc: "A história e a ciência por trás da Microbiota Ancestral." },
-              { num: "2", title: "Equilíbrio Interno", desc: "Como evitar o acúmulo de resíduos que sobrecarregam o sistema." },
-              { num: "3", title: "Conexão Mente-Corpo", desc: "O papel do Nervo Vago na regularidade do seu organismo." },
-              { num: "4", title: "O Ritual de 30 Segundos", desc: "A técnica matinal para despertar seu ritmo natural." },
-              { num: "5", title: "Alimentos de Vitalidade", desc: "Como escolher o que realmente nutre suas bactérias boas." },
-              { num: "6", title: "Suporte Natural", desc: "Gorduras inteligentes que auxiliam no trânsito digestivo." },
-              { num: "7", title: "Postura e Bem-estar", desc: "Pequenos ajustes diários para um esvaziamento completo e sem esforço." },
-            ].map((chapter, i) => (
-              <div key={i} className="flex gap-4 bg-[#2a4a73] p-6 rounded-2xl">
-                <div className="text-[#f6c445] font-black text-[40px] leading-none opacity-80">{chapter.num}</div>
+              <h2 className="text-3xl md:text-4xl font-serif font-black text-black text-center mb-8">
+                Histórias Reais de Mulheres que Recuperaram o Magnetismo
+              </h2>
+
+              <div className="space-y-6">
+                <div className="bg-white p-6 border border-gray-200 rounded-lg shadow-sm">
+                  <div className="flex items-center gap-2 mb-3 text-yellow-500 text-2xl">★★★★★</div>
+                  <p className="italic text-gray-700 mb-4">"Eu achava que meu relacionamento estava esfriando e já não tinha a mesma paciência. Depois que passei a aplicar o ritual, acordei com uma leveza que há muito tempo não sentia. Meu parceiro notou na hora e a nossa conexão melhorou muito!"</p>
+                  <p className="font-bold text-black">— Márcia T.</p>
+                </div>
+
+                <div className="bg-white p-6 border border-gray-200 rounded-lg shadow-sm">
+                  <div className="flex items-center gap-2 mb-3 text-yellow-500 text-2xl">★★★★★</div>
+                  <p className="italic text-gray-700 mb-4">"Aquela sensação de cansaço extremo que me acompanhava o dia todo diminuiu demais. Sinto-me muito mais disposta, atraente e dona de mim novamente. Uma mudança que trouxe minha autoconfiança de volta."</p>
+                  <p className="font-bold text-black">— Helena R.</p>
+                </div>
+
+                <div className="bg-white p-6 border border-gray-200 rounded-lg shadow-sm">
+                  <div className="flex items-center gap-2 mb-3 text-yellow-500 text-2xl">★★★★★</div>
+                  <p className="italic text-gray-700 mb-4">"Eu já não sabia mais o que fazer para melhorar meu humor e minha presença. Focar na limpeza interna e no equilíbrio foi a melhor decisão que tomei. Indico para todas as mulheres que querem recuperar seu brilho."</p>
+                  <p className="font-bold text-black">— Silvia M.</p>
+                </div>
+              </div>
+
+              <div className="text-center my-12">
+                <a href="https://pay.hotmart.com/L105426143X?checkoutMode=10" className="btn-cta-cb">
+                  SIM! QUERO OS MESMOS RESULTADOS
+                </a>
+              </div>
+
+              <hr className="my-12 border-gray-300" />
+
+              <h2 className="text-3xl md:text-4xl font-serif font-black text-black text-center mb-8">
+                Bônus Exclusivos (Apenas Hoje)
+              </h2>
+
+              <div className="bonus-card">
+                <h3 className="text-2xl font-black text-cb-red mb-2">BÔNUS #1: Checklist - A Geladeira Magnética</h3>
+                <p>O que nunca pode faltar na sua cozinha para manter o brilho e a energia.</p>
+              </div>
+
+              <div className="bonus-card">
+                <h3 className="text-2xl font-black text-cb-red mb-2">BÔNUS #2: Guia - Linguagem Corporal de Bama</h3>
+                <p>O poder do olhar e da presença calma para atrair e manter a conexão.</p>
+              </div>
+
+              <hr className="my-12 border-gray-300" />
+
+              <div className="guarantee-box my-12 flex flex-col md:flex-row items-center gap-8 text-left">
+                <div className="w-32 h-32 flex-shrink-0 bg-yellow-400 rounded-full flex flex-col items-center justify-center border-4 border-black shadow-lg">
+                  <span className="text-5xl font-black text-black leading-none">7</span>
+                  <span className="text-sm font-bold text-black uppercase tracking-widest mt-1">Dias</span>
+                </div>
                 <div>
-                  <h3 className="font-bold text-[20px] mb-2">{chapter.title}</h3>
-                  <p className="text-[#cbd5e1] text-[15px] m-0 leading-relaxed">{chapter.desc}</p>
+                  <h2 className="text-3xl font-black text-black mb-4">Garantia Incondicional de 7 Dias</h2>
+                  <p className="text-xl">
+                    Eu confio tanto no Protocolo de Bama que eu tiro todo o risco das suas costas. Aplique o método por 7 dias. Se você não sentir seu corpo mais leve, sua mente mais clara e seu magnetismo voltando… Eu devolvo 100% do seu dinheiro, sem perguntas e sem burocracia.
+                  </p>
                 </div>
               </div>
-            ))}
-            
-            <div className="flex gap-4 bg-[#16a34a] p-6 rounded-2xl mt-8">
-              <div className="text-white font-black text-[40px] leading-none opacity-80">+</div>
-              <div>
-                <h3 className="font-bold text-[20px] mb-2 text-white">Plano Prático de 14 Dias</h3>
-                <p className="text-green-100 text-[15px] m-0 leading-relaxed">Lista de compras, 3 receitas-chave, cronograma fase a fase e checklist diário. Tudo para você começar amanhã de manhã.</p>
+
+              <div className="text-center bg-yellow-50 p-10 border-4 border-yellow-400 rounded-xl my-12">
+                <p className="text-2xl line-through text-gray-500 mb-2">Preço Normal: R$ 197,00</p>
+                <p className="text-3xl font-bold mb-4">Preço Hoje:</p>
+                <p className="text-6xl md:text-8xl font-black text-cb-red mb-8">R$ 37,90</p>
+                
+                <a href="https://pay.hotmart.com/L105426143X?checkoutMode=10" className="btn-cta-cb text-2xl py-6">
+                  SIM! QUERO DESBLOQUEAR MEU MAGNETISMO &raquo;
+                </a>
+                <p className="mt-4 font-bold text-gray-600">Pagamento Único. Acesso Imediato.</p>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Science Section */}
-      <div className="py-[80px] bg-[#f8fafc]">
-        <div className="max-w-[680px] mx-auto px-6">
-          <div className="text-center mb-12">
-            <p className="text-[#16a34a] font-sans font-bold text-[14px] uppercase tracking-widest mb-2">Fundamentação científica</p>
-            <h2 className="text-[32px] font-extrabold text-[#111] leading-tight">Não é crença. É biologia comprovada.</h2>
-            <p className="text-[#666] mt-4 text-[18px]">O Protocolo de Bama une sabedoria ancestral com evidências publicadas nos periódicos mais respeitados do mundo.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-sans">
-            {[
-              { icon: "🧬", title: "Lactobacillus Reuteri", desc: "Regulador mestre da motilidade intestinal que reduz o tempo de trânsito fecal e alivia dor visceral crônica.", ref: "Nature Reviews Gastroenterology" },
-              { icon: "⚡", title: "Nervo Vago", desc: "90% das fibras do nervo vago levam informação do intestino ao cérebro — não o contrário. Sua microbiota controla seu humor.", ref: "Nature Reviews Neuroscience" },
-              { icon: "🛡️", title: "Biofilme Bacteriano", desc: "LPS liberados por biofilmes inflamam a mucosa e reduzem drasticamente a motilidade — criando ciclo vicioso.", ref: "Frontiers in Microbiology" },
-              { icon: "💧", title: "Reflexo Gastrocólico", desc: "Água morna em jejum aumenta significativamente as contrações colônicas de alta pressão — as únicas que movem o bolo fecal com eficiência.", ref: "European J. of Gastroenterology" },
-              { icon: "🌿", title: "Psicobióticos", desc: "Certas cepas produzem GABA diretamente no intestino, reduzindo cortisol e mantendo o peristaltismo mesmo sob pressão.", ref: "Biological Psychiatry" },
-              { icon: "📐", title: "Postura de Agachamento", desc: "Relaxa o músculo puborretal completamente, reduz esforço, previne hemorroidas e garante esvaziamento muito mais completo.", ref: "Digestive Diseases and Sciences" },
-            ].map((item, i) => (
-              <div key={i} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <div className="text-3xl mb-3">{item.icon}</div>
-                <h3 className="font-bold text-[18px] text-[#111] mb-2">{item.title}</h3>
-                <p className="text-[#444] text-[14px] mb-4 leading-relaxed">{item.desc}</p>
-                <div className="text-[11px] text-gray-400 font-bold uppercase tracking-wider border-t border-gray-100 pt-3">{item.ref}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Testimonials */}
-      <div className="py-[80px] bg-white">
-        <div className="max-w-[680px] mx-auto px-6">
-          <div className="text-center mb-12">
-            <p className="text-[#16a34a] font-sans font-bold text-[14px] uppercase tracking-widest mb-2">Resultados reais</p>
-            <h2 className="text-[32px] font-extrabold text-[#111] leading-tight">O que as pessoas estão sentindo</h2>
-          </div>
-
-          <div className="space-y-6 font-sans">
-            {[
-              { initial: "M", name: "MARIA HELENA, 57 anos", role: "São Paulo", text: "No terceiro dia já senti diferença. Acordei sem aquela pressão abdominal que me perseguia faz anos. Pensei que jamais voltaria a me sentir leve assim." },
-              { initial: "R", name: "ROBERTO ALVES, 63 anos", role: "Porto Alegre", text: "Tentei de tudo: fibras, laxantes, probióticos de farmácia. Nada durava. Com o protocolo entendi finalmente o porquê. O cap. 2 sobre o biofilme virou minha vida de cabeça para baixo." },
-              { initial: "C", name: "CLÁUDIA MENDES, 54 anos", role: "Recife", text: "O ritual dos 30 segundos parece simples demais para funcionar. Mas funciona. Na segunda semana já estava regulada como relógio — pela primeira vez em mais de 10 anos." },
-              { initial: "A", name: "ANA LUCIA COSTA, 59 anos", role: "Belo Horizonte", text: "Meu marido notou a mudança antes de mim. Disse que eu estava com outra energia, outro brilho. Perdi 4cm de circunferência abdominal em 14 dias — sem mudar quantidade de comida." },
-              { initial: "J", name: "JORGE SANTOS, 66 anos", role: "Curitiba", text: "Cético por natureza. Li o material esperando mais do mesmo. Mas as referências científicas são reais — fui verificar. Segui o plano na íntegra e os resultados falaram por si." },
-              { initial: "F", name: "FÁTIMA OLIVEIRA, 52 anos", role: "Florianópolis", text: "Minha pele mudou junto com o intestino. As olheiras diminuíram, o inchaço no rosto sumiu. Não esperava esse efeito. O livro explica o motivo — e faz todo sentido." },
-            ].map((review, i) => (
-              <div key={i} className="bg-[#f8fafc] p-6 rounded-2xl border border-gray-100">
-                <div className="text-[#f59e0b] text-xl mb-3">★★★★★</div>
-                <p className="text-[#333] italic text-[16px] mb-4">"{review.text}"</p>
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-[#1c3557] rounded-full flex items-center justify-center text-white font-bold">{review.initial}</div>
-                  <div>
-                    <div className="font-bold text-[14px] text-[#111]">{review.name}</div>
-                    <div className="text-[12px] text-gray-500">{review.role}</div>
+              {/* FAQ */}
+              <h2 className="text-3xl md:text-4xl font-serif font-black text-black text-center mb-8 mt-16">
+                Perguntas Frequentes
+              </h2>
+              <div className="space-y-4">
+                {[
+                  { q: "O protocolo é difícil de seguir?", a: "Não. Ele foi desenhado para mulheres modernas e ocupadas, focado em pequenos ajustes matinais." },
+                  { q: "Preciso comprar suplementos caros?", a: "Não. Todos os ingredientes são naturais e encontrados em qualquer supermercado ou feira." },
+                  { q: "Em quanto tempo vejo resultados?", a: "Muitas mulheres relatam uma sensação de leveza e clareza mental pouco tempo após mudarem seus hábitos diários, mas vale lembrar que cada corpo responde no seu próprio ritmo." },
+                  { q: "Como recebo o material?", a: "Imediatamente após a confirmação do pagamento, você recebe um e-mail com o link para baixar o e-book e todos os bônus." }
+                ].map((item, i) => (
+                  <div key={i} className="bg-white border-2 border-gray-200 rounded-lg overflow-hidden">
+                    <button 
+                      onClick={() => toggleFaq(i)}
+                      className="w-full text-left p-6 font-bold text-xl flex justify-between items-center hover:bg-gray-50"
+                    >
+                      {item.q}
+                      <span className="text-cb-red text-2xl font-black">{openFaq === i ? '−' : '+'}</span>
+                    </button>
+                    {openFaq === i && (
+                      <div className="px-6 pb-6 text-lg text-gray-700">
+                        {item.a}
+                      </div>
+                    )}
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
-      </div>
 
-      {/* Bonuses */}
-      <div className="py-[80px] bg-[#f0fdf4] border-y border-[#bbf7d0]">
-        <div className="max-w-[680px] mx-auto px-6">
-          <div className="text-center mb-12">
-            <p className="text-[#16a34a] font-sans font-bold text-[14px] uppercase tracking-widest mb-2">Bônus exclusivos</p>
-            <h2 className="text-[32px] font-extrabold text-[#111] leading-tight">Tudo o que você recebe hoje</h2>
-          </div>
-
-          <div className="space-y-6 font-sans">
-            {[
-              { num: "1", title: "Guia Prático de 14 Dias — Lista de Compras + Receitas", desc: "Tudo o que você precisa comprar, as 3 receitas-chave (Gel Vassoura, Caldo de Vitalidade e Chucrute de Ouro) e o cronograma completo fase a fase. Imprima e cole na geladeira." },
-              { num: "2", title: "Checklist Diário de Recalibragem", desc: "Um checklist simples para marcar cada hábito diário do protocolo. Não deixa você esquecer nenhum passo — e dá a satisfação visual de ver seu progresso crescer dia a dia." },
-              { num: "3", title: "Dicas de Ouro para Fixar na Geladeira", desc: "Os 3 mandamentos ancestrais condensados em um card visual que você coloca na geladeira: Água Morna SEMPRE · Relaxe a Mandíbula · Azeite é Remédio." },
-            ].map((bonus, i) => (
-              <div key={i} className="bg-white p-6 rounded-2xl shadow-sm border border-green-100 relative overflow-hidden">
-                <div className="absolute top-0 right-0 bg-[#16a34a] text-white text-[10px] font-bold uppercase py-1 px-3 rounded-bl-lg">GRÁTIS</div>
-                <div className="text-[#16a34a] font-black text-[14px] mb-1 uppercase tracking-wider">BÔNUS #{bonus.num}</div>
-                <h3 className="font-bold text-[20px] text-[#111] mb-2">{bonus.title}</h3>
-                <p className="text-[#444] text-[15px] m-0 leading-relaxed">{bonus.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Offer Section */}
-      <div className="py-[80px] bg-white">
-        <div className="max-w-[680px] mx-auto px-6">
-          <div className="text-center mb-10">
-            <p className="text-[#16a34a] font-sans font-bold text-[14px] uppercase tracking-widest mb-2">Sua decisão</p>
-            <h2 className="text-[32px] font-extrabold text-[#111] leading-tight">Recupere sua Leveza Ancestral hoje mesmo.</h2>
-            <p className="text-[#666] mt-4 text-[18px]">Por um valor menor do que uma consulta médica, você acessa a ciência que os centenários vivem há milênios.</p>
-          </div>
-
-          <div className="bg-white border-[4px] border-[#16a34a] rounded-[24px] p-[40px] shadow-2xl relative font-sans">
-            <div className="text-center mb-8 border-b border-gray-100 pb-8">
-              <div className="text-[20px] text-gray-400 line-through font-bold">De R$ 197,00</div>
-              <div className="text-[80px] text-[#16a34a] font-black leading-none tracking-[-2px] my-2">R$ 37,90</div>
-              <div className="text-[14px] font-bold text-gray-500 uppercase tracking-wider">PAGAMENTO ÚNICO · ACESSO IMEDIATO</div>
             </div>
-
-            <ul className="space-y-4 mb-8 text-[16px] text-[#333]">
-              <li className="flex items-start gap-3"><span className="text-[#16a34a] font-bold">✓</span> E-book completo: O Código Oculto da Longevidade (7 capítulos)</li>
-              <li className="flex items-start gap-3"><span className="text-[#16a34a] font-bold">✓</span> Protocolo Prático de 14 Dias passo a passo</li>
-              <li className="flex items-start gap-3"><span className="text-[#16a34a] font-bold">✓</span> Lista de Compras Essencial</li>
-              <li className="flex items-start gap-3"><span className="text-[#16a34a] font-bold">✓</span> As 3 Receitas-Chave de Bama</li>
-              <li className="flex items-start gap-3"><span className="text-[#16a34a] font-bold">✓</span> Checklist Diário de Recalibragem</li>
-              <li className="flex items-start gap-3"><span className="text-[#16a34a] font-bold">✓</span> Card "Dicas de Ouro para a Geladeira"</li>
-              <li className="flex items-start gap-3"><span className="text-[#16a34a] font-bold">✓</span> <b>Risco Zero com Nossa Garantia de 7 Dias:</b> Aplique o Protocolo de Bama. Se em até 7 dias você não sentir uma melhora real na sua disposição e no seu ritmo digestivo, devolvemos 100% do seu investimento.</li>
-            </ul>
-
-            <a href="https://pay.hotmart.com/M105084214G?checkoutMode=10" className="block text-center w-full bg-[#16a34a] text-white no-underline py-5 px-6 rounded-2xl text-[22px] font-black transition-all duration-300 border-b-[6px] border-[#15803d] shadow-xl hover:translate-y-[2px] hover:border-b-[4px]">
-              SIM — QUERO MINHA LEVEZA ANCESTRAL →
-            </a>
-            
-            <div className="text-center mt-6 text-[12px] text-gray-400 font-bold uppercase tracking-wider flex items-center justify-center gap-2">
-              <span>🔒 Pagamento 100% seguro</span>
-              <span>·</span>
-              <span>SSL criptografado</span>
-              <span>·</span>
-              <span>Acesso imediato</span>
-            </div>
-          </div>
+          </section>
         </div>
-      </div>
-
-      {/* Guarantee */}
-      <div className="py-[80px] bg-[#1c3557] text-white">
-        <div className="max-w-[680px] mx-auto px-6 flex flex-col md:flex-row items-center gap-10">
-          <div className="w-full md:w-1/3 text-center">
-            <div className="w-32 h-32 mx-auto border-4 border-[#f6c445] rounded-full flex flex-col items-center justify-center p-2">
-              <span className="text-[40px] font-black leading-none text-[#f6c445]">7</span>
-              <span className="text-[12px] font-bold uppercase tracking-widest text-white">DIAS DE<br/>GARANTIA<br/>TOTAL</span>
-            </div>
-          </div>
-          <div className="w-full md:w-2/3 text-center md:text-left">
-            <h2 className="text-[28px] font-extrabold mb-4 text-[#f6c445]">Risco zero para você</h2>
-            <p className="text-[18px] font-bold mb-4">Se não funcionar, você não paga. Simples assim.</p>
-            <p className="text-[16px] text-[#cbd5e1] mb-4">
-              Aplique o Protocolo de Bama. Se ao final você não sentir uma diferença real — menos inchaço, mais leveza, digestão mais fluida — basta nos enviar um e-mail em até 7 dias após a compra e devolvemos 100% do seu investimento, sem perguntas, sem burocracia.
-            </p>
-            <p className="text-[16px] text-white font-bold">Você tem 7 dias para provar que funciona. O risco é todo nosso.</p>
-          </div>
-        </div>
-      </div>
-
-      {/* FAQ */}
-      <div className="py-[80px] bg-[#f8fafc]">
-        <div className="max-w-[680px] mx-auto px-6">
-          <div className="text-center mb-12">
-            <p className="text-[#16a34a] font-sans font-bold text-[14px] uppercase tracking-widest mb-2">Dúvidas frequentes</p>
-            <h2 className="text-[32px] font-extrabold text-[#111] leading-tight">Perguntas que você provavelmente tem</h2>
-          </div>
-
-          <div className="space-y-4 font-sans">
-            {[
-              { q: "Para quem este protocolo é indicado?", a: "Para adultos de todas as idades que sofrem com constipação crônica, inchaço abdominal persistente, sensação de esvaziamento incompleto, fadiga pós-refeição ou que simplesmente percebem que o intestino \"parou de ouvir\". O protocolo é seguro para a maioria das pessoas, mas recomendamos consultar seu médico se você tiver condições inflamatórias intestinais graves." },
-              { q: "Preciso comprar produtos caros ou exóticos?", a: "Não. A lista de compras do protocolo usa ingredientes facilmente encontrados em qualquer mercado ou feirinha: abóbora, salsão, limão, gengibre, sementes de chia, linhaça, azeite extravirgem e vinagre de maçã. Os únicos \"suplementos\" mencionados são opcionais (Magnésio Bisglicinato — disponível em farmácias por menos de R$30)." },
-              { q: "Em quanto tempo vejo resultado?", a: "Muitas pessoas relatam diferença perceptível nos primeiros 3 dias da Fase 1 (Ajuste de Equilíbrio). A transformação mais significativa — com a recolonização da microbiota — ocorre entre os dias 4 e 10. Ao final dos 14 dias, o objetivo é que o seu intestino funcione no \"piloto automático\", sem dependência de laxantes ou rituais elaborados." },
-              { q: "É um e-book ou tem acesso a aulas/vídeos?", a: "O Protocolo de Bama é entregue como e-book digital (PDF) — compatível com celular, tablet e computador. Você pode ler, salvar offline e imprimir. O formato foi escolhido intencionalmente: o protocolo é direto ao ponto, sem horas de vídeo para assistir antes de começar." },
-              { q: "Como funciona a garantia de 7 dias?", a: "Simples: se em até 7 dias após a compra você não estiver satisfeito com os resultados — por qualquer motivo — basta enviar um e-mail para nosso suporte solicitando o reembolso. Devolvemos 100% do valor pago, sem questionamentos. Não precisamos de justificativa. Sua satisfação é a única condição." },
-              { q: "Este protocolo substitui tratamento médico?", a: "Não. O Protocolo de Bama é um guia de hábitos baseado em sabedoria ancestral e respaldado por pesquisas científicas. Ele não substitui o acompanhamento de um gastroenterologista ou médico, especialmente em casos de condições pré-existentes. Se você tiver dúvidas sobre a adequação do protocolo ao seu bem-estar, consulte seu médico antes de começar." },
-            ].map((faq, i) => (
-              <div key={i} className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-                <button 
-                  onClick={() => toggleFaq(i)}
-                  className="w-full text-left p-5 font-bold text-[16px] text-[#111] flex justify-between items-center hover:bg-gray-50 transition-colors"
-                >
-                  {faq.q}
-                  <span className="text-[#16a34a] text-xl">{openFaq === i ? '−' : '+'}</span>
-                </button>
-                {openFaq === i && (
-                  <div className="p-5 pt-0 text-[#444] text-[15px] leading-relaxed border-t border-gray-100">
-                    {faq.a}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Final CTA */}
-      <div className="py-[80px] bg-white text-center">
-        <div className="max-w-[680px] mx-auto px-6">
-          <p className="text-[#b91c1c] font-sans font-bold text-[14px] uppercase tracking-widest mb-4">Última chance</p>
-          <h2 className="text-[32px] font-extrabold text-[#111] leading-tight mb-6">
-            Você pode continuar lutando contra seu corpo.<br/>
-            Ou pode dar a ele as instruções que ele está pedindo.
-          </h2>
-          <p className="text-[19px] text-[#444] mb-10">
-            Os centenários de Bama não fazem nada extraordinário. Eles apenas respeitam o ritmo biológico que a modernidade nos fez esquecer. Em 14 dias, você pode reaprender esse ritmo.
-          </p>
-          <a href="https://pay.hotmart.com/M105084214G?checkoutMode=10" className="inline-block w-full bg-[#16a34a] text-white no-underline py-5 px-8 rounded-2xl text-[22px] font-black font-sans transition-all duration-300 border-b-[6px] border-[#15803d] shadow-xl hover:translate-y-[2px] hover:border-b-[4px] mb-4">
-            COMEÇAR MEU PROTOCOLO DE 14 DIAS →
-          </a>
-          <p className="text-[14px] text-gray-500 font-sans font-bold">
-            Apenas R$ 37,90 · Garantia de 7 dias · Acesso imediato
-          </p>
-        </div>
-      </div>
-
-        </>
-      )}
-      </motion.div>
       )}
 
       {/* Footer */}
-      <footer className="bg-[#0f1f33] text-[#4a6278] py-[60px] px-[20px] text-center text-[13px] font-sans">
-        <div className="max-w-[680px] mx-auto px-6">
-          <p className="mb-4 font-bold text-[#64748b]">
-            www.protocolodebama.com.br
+      <footer className="bg-gray-900 text-gray-400 py-12 text-center text-sm font-sans relative z-10">
+        <div className="max-w-[800px] mx-auto px-6">
+          <p className="mb-4 font-bold text-white tracking-widest uppercase">
+            Protocolo de Bama
           </p>
-          <p className="mb-4">
-            Isenção de Responsabilidade: Os resultados podem variar e este método não substitui o acompanhamento médico. Este site não é afiliado ao Facebook ou a qualquer entidade do Facebook.
+          <p className="mb-6 leading-relaxed">
+            Isenção de Responsabilidade: Os resultados podem variar e este método não substitui o acompanhamento médico. Este site não é afiliado ao Facebook ou a qualquer entidade do Facebook. A Hotmart é a plataforma de pagamentos e não endossa as declarações ou promessas deste produto.
           </p>
-          <div className="flex justify-center gap-4 text-[12px] opacity-70">
-            <Link to="/privacidade" className="text-[#4a6278] hover:text-white transition-colors">Políticas de Privacidade</Link>
-            <span>·</span>
-            <Link to="/termos-de-uso" className="text-[#4a6278] hover:text-white transition-colors">Termos de Uso</Link>
+          <div className="flex justify-center gap-6 font-bold uppercase tracking-widest">
+            <Link to="/privacidade" className="hover:text-white transition-colors">Privacidade</Link>
+            <Link to="/termos-de-uso" className="hover:text-white transition-colors">Termos</Link>
           </div>
+          <p className="mt-8">© 2024 Protocolo de Bama. Todos os direitos reservados.</p>
         </div>
       </footer>
 
       {/* Sticky CTA */}
-      <div className={`fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-[0_-10px_20px_-5px_rgba(0,0,0,0.15)] p-3 md:p-4 z-50 transition-transform duration-300 ${showSticky ? 'translate-y-0' : 'translate-y-full'}`}>
-        <div className="max-w-[680px] mx-auto flex flex-col items-center gap-2">
-          <a href="https://pay.hotmart.com/M105084214G?checkoutMode=10" className="w-full bg-[#16a34a] text-white text-center no-underline py-3 px-4 rounded-xl text-[16px] md:text-[18px] font-black font-sans transition-all duration-300 border-b-[4px] border-[#15803d] hover:translate-y-[2px] hover:border-b-[2px] flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2">
-            <span>SIM — QUERO MINHA LEVEZA ANCESTRAL →</span>
-            <span className="bg-white text-[#16a34a] px-2 py-0.5 rounded text-[14px] md:text-[15px] ml-0 md:ml-2">R$ 37,90</span>
-          </a>
-          <div className="text-center text-[10px] md:text-[11px] text-gray-500 font-bold uppercase tracking-wider flex flex-wrap items-center justify-center gap-1 md:gap-2">
-            <span>🔒 Pagamento 100% seguro</span>
-            <span>·</span>
-            <span>SSL criptografado</span>
-            <span>·</span>
-            <span>Acesso imediato</span>
+      {showSticky && (
+        <div className="fixed bottom-0 left-0 w-full bg-white border-t-4 border-cb-red p-4 z-50 shadow-[0_-10px_20px_rgba(0,0,0,0.1)]">
+          <div className="max-w-[800px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="text-center md:text-left">
+              <p className="font-black text-xl text-black">Desbloqueie Seu Magnetismo Hoje!</p>
+              <p className="text-cb-red font-bold">Apenas R$ 37,90</p>
+            </div>
+            <a href="https://pay.hotmart.com/L105426143X?checkoutMode=10" className="btn-cta-cb m-0 py-4 px-8 text-xl w-full md:w-auto">
+              QUERO MEU ACESSO AGORA &raquo;
+            </a>
           </div>
         </div>
-      </div>
+      )}
 
     </div>
   );
@@ -716,7 +616,6 @@ export default function App() {
       {/* Cookie Banner */}
       {!cookieConsent && (
         <div 
-          id="cookie-banner" 
           style={{ 
             position: 'fixed', 
             bottom: 0, 
@@ -727,35 +626,30 @@ export default function App() {
             color: '#fff', 
             padding: '20px', 
             textAlign: 'center', 
-            fontFamily: 'sans-serif', 
             zIndex: 10000, 
-            fontSize: '14px',
-            boxShadow: '0 -4px 20px rgba(0,0,0,0.3)',
-            borderTop: '2px solid #16a34a'
+            borderTop: '4px solid #cc0000'
           }}
         >
           <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
             <p style={{ margin: 0, lineHeight: '1.5' }}>
-              Este site utiliza cookies para melhorar sua experiência e analisar o tráfego. 
-              Ao continuar navegando, você concorda com nossa <Link to="/privacidade" style={{ color: '#16a34a', textDecoration: 'underline', fontWeight: 'bold' }}>Política de Privacidade</Link>.
+              Este site utiliza cookies para melhorar sua experiência. 
+              Ao continuar, você concorda com nossa <Link to="/privacidade" style={{ color: '#fff200', textDecoration: 'underline', fontWeight: 'bold' }}>Política de Privacidade</Link>.
             </p>
             <button 
               onClick={acceptCookies} 
               style={{ 
-                background: '#16a34a', 
+                background: '#cc0000', 
                 color: 'white', 
                 border: 'none', 
                 padding: '10px 30px', 
                 cursor: 'pointer', 
-                borderRadius: '8px',
+                borderRadius: '4px',
                 fontWeight: 'bold',
-                fontSize: '15px',
-                transition: 'transform 0.2s'
+                fontSize: '16px',
+                textTransform: 'uppercase'
               }}
-              onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-              onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
             >
-              Aceitar e Continuar
+              Aceitar
             </button>
           </div>
         </div>
