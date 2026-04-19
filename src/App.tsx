@@ -336,7 +336,7 @@ function SalesPage() {
               </h2>
 
               <p>
-                No topo das montanhas, na isolada Vila de Bama, pesquisadores encontraram algo que vai além da longevidade física: o verdadeiro código da convivência harmoniosa. Lá, casais centenários vivem com uma energia e uma cumplicidade que parecem imunes ao tempo.
+                No topo das montanhas, na isolada Vila de Bama, China, pesquisadores encontraram algo que vai além da longevidade física: o verdadeiro código da convivência harmoniosa. Lá, casais centenários vivem com uma energia e uma cumplicidade que parecem imunes ao tempo.
               </p>
 
               <p>
