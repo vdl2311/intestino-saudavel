@@ -18,7 +18,7 @@ export default function Privacy() {
           <p>Apenas retemos as informações coletadas pelo tempo necessário para fornecer o serviço solicitado. Quando armazenamos dados, protegemos dentro de meios comercialmente aceitáveis ​​para evitar perdas e roubos, bem como acesso, divulgação, cópia, uso ou modificação não autorizados.</p>
           
           <h2 className="text-3xl font-serif font-black text-black">3. Cookies</h2>
-          <p>Usamos cookies para coletar informações sobre sua atividade em nosso site. Isso nos ajuda a entender como você usa o site e a melhorar sua experiêntia. Também utilizamos cookies de terceiros, como o Pixel do Facebook, para entender o desempenho de nossas campanhas e oferecer conteúdo relevante.</p>
+          <p>Usamos cookies para coletar informações sobre sua atividade em nosso site. Isso nos ajuda a entender como você usa o site e a melhorar sua experiêntia.</p>
           
           <h2 className="text-3xl font-serif font-black text-black">4. Links para sites de terceiros</h2>
           <p>Nosso site pode ter links para sites externos que não são operados por nós. Esteja ciente de que não temos controle sobre o conteúdo e práticas desses sites e não podemos aceitar responsabilidade por suas respectivas políticas de privacidade.</p>
