@@ -17,34 +17,34 @@ export default function CategoryPage() {
 
   return (
     <Layout>
-      <section className="py-16 px-4">
+      <section className="py-24 md:py-32 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-16 text-center">
-            <span className={`text-${category.theme}-600 font-bold tracking-widest uppercase text-sm`}>
+          <div className="mb-24 text-center">
+            <span className={`text-${category.theme}-600 font-bold tracking-widest uppercase text-sm mb-6 block`}>
               Protocolo de Bama
             </span>
-            <h1 className="text-5xl md:text-7xl font-serif font-black text-black leading-tight mt-4 mb-6">
+            <h1 className="text-6xl md:text-8xl font-serif font-black text-black leading-tight mt-4 mb-10">
               {category.title}
             </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-loose">
               {category.description}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24">
             {category.items.map((item, idx) => (
               <article key={idx} className="group">
                 <Link to={`/${categoryId}/${item.slug}`} className="block">
-                  <div className="aspect-[16/9] bg-gray-200 mb-6 overflow-hidden rounded-sm shadow-sm group-hover:shadow-md transition-all">
-                     <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <div className="aspect-[16/9] bg-gray-200 mb-10 overflow-hidden rounded-sm shadow-sm group-hover:shadow-xl transition-all">
+                     <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" />
                   </div>
-                  <h2 className="text-3xl font-serif font-bold mt-2 leading-tight group-hover:underline text-black">
+                  <h2 className="text-4xl font-serif font-bold mt-2 leading-tight group-hover:underline text-black mb-6">
                     {item.title}
                   </h2>
-                  <p className="mt-4 text-gray-600 line-clamp-3">
-                    {item.content.replace(/##.*/g, '').replace(/<[^>]*>?/gm, '').substring(0, 150)}...
+                  <p className="mt-4 text-xl text-gray-600 line-clamp-3 leading-loose mb-8">
+                    {item.content.replace(/##.*/g, '').replace(/<[^>]*>?/gm, '').substring(0, 180)}...
                   </p>
-                  <div className={`mt-6 inline-block font-bold text-xs uppercase tracking-widest text-${category.theme}-700 border-b-2 border-${category.theme}-100 pb-1 group-hover:border-${category.theme}-700 transition-colors`}>
+                  <div className={`mt-6 inline-block font-bold text-xs uppercase tracking-widest text-${category.theme}-700 border-b-2 border-${category.theme}-100 pb-2 group-hover:border-${category.theme}-700 transition-colors`}>
                     Ler Artigo Completo
                   </div>
                 </Link>
@@ -52,7 +52,9 @@ export default function CategoryPage() {
             ))}
           </div>
 
-          <AdSenseDisclaimer />
+          <div className="mt-24">
+            <AdSenseDisclaimer />
+          </div>
         </div>
       </section>
     </Layout>
