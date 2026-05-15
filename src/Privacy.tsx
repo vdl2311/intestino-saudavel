@@ -17,8 +17,8 @@ export default function Privacy() {
           <h2 className="text-3xl font-serif font-black text-black">2. Uso das informações</h2>
           <p>Apenas retemos as informações coletadas pelo tempo necessário para fornecer o serviço solicitado. Quando armazenamos dados, protegemos dentro de meios comercialmente aceitáveis ​​para evitar perdas e roubos, bem como acesso, divulgação, cópia, uso ou modificação não autorizados.</p>
           
-          <h2 className="text-3xl font-serif font-black text-black">3. Cookies</h2>
-          <p>Usamos cookies para coletar informações sobre sua atividade em nosso site. Isso nos ajuda a entender como você usa o site e a melhorar sua experiêntia.</p>
+          <h2 className="text-3xl font-serif font-black text-black">3. Cookies e Publicidade (Google AdSense)</h2>
+          <p>Nós usamos cookies para coletar informações sobre sua atividade em nosso site, otimizando sua experiência. Além disso, o Google, como fornecedor de terceiros, utiliza cookies para exibir anúncios no nosso site. Com o uso do cookie de publicidade, o Google e seus parceiros podem veicular anúncios para nossos usuários com base nas visitas feitas ao nosso site e/ou a outros sites na Internet. Os usuários podem desativar a publicidade personalizada acessando as Configurações de anúncios do Google.</p>
           
           <h2 className="text-3xl font-serif font-black text-black">4. Links para sites de terceiros</h2>
           <p>Nosso site pode ter links para sites externos que não são operados por nós. Esteja ciente de que não temos controle sobre o conteúdo e práticas desses sites e não podemos aceitar responsabilidade por suas respectivas políticas de privacidade.</p>
