@@ -53,9 +53,9 @@ function HomePage() {
       </section>
 
       {/* Pillars Grid */}
-      <section className="py-32 px-4 bg-white" id="pilares">
+      <section className="py-48 px-4 bg-white" id="pilares">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16">
             {[
               { title: "Alimentação", color: "bg-green-50", text: "text-green-900", icon: "🥗", desc: "A dieta anti-inflamatória e o poder dos nutrientes ancestrais.", path: "/alimentacao" },
               { title: "Movimento", color: "bg-blue-50", text: "text-blue-900", icon: "🏃‍♀️", desc: "Mobilidade e exercícios funcionais para longevidade articular.", path: "/movimento" },
@@ -80,12 +80,12 @@ function HomePage() {
       </section>
 
       {/* Featured Articles */}
-      <section className="py-32 px-4 bg-brand-bg" aria-labelledby="featured-articles-title">
+      <section className="py-48 px-4 bg-brand-bg" aria-labelledby="featured-articles-title">
         <div className="max-w-7xl mx-auto">
-          <h2 id="featured-articles-title" className="text-5xl font-serif font-black mb-24 text-center">Artigos em Destaque</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
+          <h2 id="featured-articles-title" className="text-6xl font-serif font-black mb-32 text-center">Artigos em Destaque</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-20">
             {[
-              { cat: "Alimentação", title: "Os 5 Superalimentos da Longevidade Celular", path: "/alimentacao/os-5-superalimentos-da-longevidade", img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=800" },
+              { cat: "Alimentação", title: "Jejum Intermitente e Autofagia: O Ritual de Limpeza Celular", path: "/alimentacao/jejum-intermitente-e-autofagia-reforma-celular", img: "/jejum-intermitente.png" },
               { cat: "Movimento", title: "Exercícios de 15 Minutos para Quem Trabalha Sentado", path: "/movimento/exercicios-de-15-minutos-trabalha-sentado", img: "/mulher-movimento.png" },
               { cat: "Sono", title: "Por Que Você Acorda às 3 da Manhã e Como Evitar Isso com Bama", path: "/sono/por-que-voce-acorda-as-3-da-manha", img: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&q=80&w=800" },
             ].map((art, idx) => (
@@ -136,39 +136,39 @@ function AboutPage() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="aspect-[21/9] w-full overflow-hidden mb-32 shadow-2xl rounded-sm"
+            className="aspect-[21/9] w-full overflow-hidden mb-40 shadow-2xl rounded-sm"
           >
-            <img src="/casal- idosos-caminhando.png" alt="Casal de idosos saudáveis caminhando no parque" className="w-full h-full object-cover" />
+            <img src="/casal-idosos-caminhando.png" alt="Casal de idosos saudáveis caminhando no parque" className="w-full h-full object-cover" />
           </motion.div>
 
           {/* Intro Quote */}
-          <div className="max-w-4xl mx-auto mb-32 px-6">
-            <p className="text-3xl md:text-4xl text-gray-800 italic border-l-8 border-brand-red pl-12 py-6 leading-loose font-serif">
+          <div className="max-w-4xl mx-auto mb-40 px-6">
+            <p className="text-3xl md:text-5xl text-gray-800 italic border-l-8 border-brand-red pl-12 py-8 leading-relaxed font-serif">
               "Não buscamos apenas adicionar anos à vida, mas vida aos anos através da sabedoria ancestral e da ciência preventiva."
             </p>
           </div>
 
           {/* Content Blocks */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-20 mb-32">
-            <div className="space-y-10">
-              <div className="space-y-6">
-                <h2 className="text-4xl md:text-5xl font-serif font-black text-black leading-tight">Por que Bama?</h2>
-                <div className="h-1.5 w-24 bg-brand-red"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-32 mb-40">
+            <div className="space-y-12">
+              <div className="space-y-8">
+                <h2 className="text-4xl md:text-6xl font-serif font-black text-black leading-tight">Por que Bama?</h2>
+                <div className="h-2 w-32 bg-brand-red"></div>
               </div>
-              <p className="text-xl text-gray-700 leading-loose">
+              <p className="text-2xl text-gray-700 leading-relaxed">
                 Bama é mais do que um local geográfico na China; é um símbolo de resistência biológica. Em um mundo onde o envelhecimento precoce e as doenças do estilo de vida se tornaram a norma, a Vila de Bama permanece como uma prova viva de que o corpo humano possui uma capacidade incrível de regeneração quando alinhado com a natureza.
               </p>
-              <p className="text-xl text-gray-700 leading-loose">
+              <p className="text-2xl text-gray-700 leading-relaxed">
                 Este portal nasceu do desejo de democratizar essa sabedoria. Traduzimos as práticas centenárias em guias práticos, fundamentados em evidências de saúde preventiva, para que você possa resgatar sua vitalidade no meio da correria moderna.
               </p>
             </div>
-            <div className="bg-gray-50 p-12 md:p-16 rounded-sm border border-gray-100 shadow-sm flex flex-col justify-center">
-              <h2 className="text-4xl font-serif font-black text-black mb-10">Quem Somos</h2>
-              <div className="space-y-8">
-                <p className="text-xl text-gray-700 leading-loose">
+            <div className="bg-gray-50 p-16 md:p-24 rounded-sm border border-gray-100 shadow-sm flex flex-col justify-center">
+              <h2 className="text-5xl font-serif font-black text-black mb-12">Quem Somos</h2>
+              <div className="space-y-10">
+                <p className="text-2xl text-gray-700 leading-relaxed">
                   Somos um coletivo de entusiastas da longevidade, pesquisadores de saúde preventiva e educadores de bem-estar.
                 </p>
-                <p className="text-xl text-gray-700 leading-loose">
+                <p className="text-2xl text-gray-700 leading-relaxed">
                   Nossa missão é ser o seu guia definitivo na jornada de retorno à sua essência biológica, combinando tradição e ciência de ponta.
                 </p>
               </div>
