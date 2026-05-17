@@ -8,7 +8,7 @@ export const articles = {
       {
         slug: 'o-guia-definitivo-dieta-anti-inflamatoria-bama',
         title: 'O Guia Definitivo da Dieta Anti-inflamatória de Bama',
-        image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=1200',
+        image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=60&w=800',
         content: `
 ## Introdução: O Inimigo Silencioso e a Promessa de Bama
 
@@ -46,7 +46,7 @@ A jornada da longevidade começa com uma decisão consciente de tratar cada refe
       {
         slug: 'os-5-superalimentos-da-longevidade',
         title: 'Os 5 Superalimentos da Longevidade Celular',
-        image: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&q=80&w=1200',
+        image: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&q=60&w=800',
         content: `
 ## Introdução: Além das Calorias — A Modulação Genética
 
@@ -82,7 +82,7 @@ Comece pequeno, mas comece hoje. Escolha um desses alimentos e torne-o um grampo
       {
         slug: 'receita-pratica-o-bowl-da-longevidade',
         title: 'Receita Prática: O Bowl da Longevidade',
-        image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=1200',
+        image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=60&w=800',
         content: `
 ## Introdução: O Prato Como Uma Ferramenta de Engenharia Biológica
 
@@ -120,7 +120,7 @@ Lembre-se: o seu corpo é um espelho das substâncias que você o convida a proc
       {
         slug: 'bioquimica-da-longevidade-sinalizacao-celular',
         title: 'A Bioquímica da Longevidade: Sinalização Celular e o Poder dos Polifenóis',
-        image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=1200',
+        image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=60&w=800',
         content: `
 ## Introdução: O Diálogo Invisível Entre o Prato e o DNA
 
@@ -283,7 +283,7 @@ A longevidade não é um evento isolado no futuro, mas a soma de como você trat
       {
         slug: 'a-importancia-da-caminhada-diaria-para-o-coracao',
         title: 'A Importância da Caminhada Diária (e do Earthing) para o Coração',
-        image: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&q=80&w=1200',
+        image: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&q=60&w=800',
         content: `
 ## Introdução: A Medicina do Percurso e o Elo Perdido
 
@@ -322,7 +322,7 @@ Note como, após poucas semanas de prática, o seu sono torna-se mais profundo e
       {
         slug: 'mobilidade-primordial-segredo-longevidade-articular',
         title: 'Mobilidade Primordial: O Segredo da Longevidade Articular e Funcional',
-        image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=1200',
+        image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=60&w=800',
         content: `
 ## Introdução: A Evolução Travada e a Rigidez Moderna
 
@@ -360,7 +360,7 @@ A jornada da longevidade é percorrida por quem tem a coragem de não se deixar 
       {
         slug: 'resistencia-natural-e-forca-funcional',
         title: 'Resistência Natural: Construindo a Armadura Biológica da Longevidade',
-        image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=1200',
+        image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=60&w=800',
         content: `
 ## Introdução: A Fundação Invisível da Nossa Longevidade
 
@@ -407,7 +407,7 @@ Comece hoje: carregue as compras do mercado com consciência, agache-se enquanto
       {
         slug: 'o-inimigo-invisivel-cortisol-stress-cronico',
         title: 'O Inimigo Invisível: Cortisol e Stress Crônico',
-        image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=1200',
+        image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=60&w=800',
         content: `
 ## Introdução: O Veneno Invisível da Vida Moderna
 
@@ -485,7 +485,7 @@ Em Bama, eles não precisam de "técnicas" porque vivem em um estado de respira�
       {
         slug: 'o-impacto-das-redes-sociais-e-o-detox-digital',
         title: 'O Impacto das Redes Sociais no Envelhecimento Mental',
-        image: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?auto=format&fit=crop&q=80&w=1200',
+        image: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?auto=format&fit=crop&q=60&w=800',
         content: `
 ## Introdução: O Rapto da Atenção e a Dopamina Digital
 
@@ -562,7 +562,7 @@ Comece hoje: adote o silêncio matinal, use sua visão de horizonte e escolha a 
       {
         slug: 'ikigai-e-proposito-biologia-da-vontade-de-viver',
         title: 'Ikigai e Propósito: A Biologia da Vontade de Viver e a Longevidade',
-        image: 'https://images.unsplash.com/photo-1516307361668-333067d022b3?auto=format&fit=crop&q=80&w=1200',
+        image: 'https://images.unsplash.com/photo-1516307361668-333067d022b3?auto=format&fit=crop&q=60&w=800',
         content: `
 ## Introdução: O Sentido da Vida como Combustível Celular
 
@@ -608,7 +608,7 @@ Comece hoje: escolha uma causa, cultive um afeto, aprenda algo novo e sinta a en
       {
         slug: 'a-ciencia-do-sono-centenario',
         title: 'A Ciência do Sono Centenário',
-        image: 'https://images.unsplash.com/photo-1455642305367-68834a1da7ab?auto=format&fit=crop&q=80&w=1200',
+        image: 'https://images.unsplash.com/photo-1455642305367-68834a1da7ab?auto=format&fit=crop&q=60&w=800',
         content: `
 ## Introdução: O Renascimento Noturno em Bama
 
@@ -647,7 +647,7 @@ Não veja o sono como uma perda de produtividade, mas como o combustível essenc
       {
         slug: 'por-que-voce-acorda-as-3-da-manha',
         title: 'Por Que Você Acorda às 3 da Manhã e Como Evitar Isso com Bama',
-        image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&q=80&w=1200',
+        image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&q=60&w=800',
         content: `
 ## Introdução: O Fantasma da Madrugada e o Ciclo Cortisol-Insulina
 
@@ -686,7 +686,7 @@ Não aceite noites fragmentadas como uma consequência inevitável da idade ou d
       {
         slug: 'a-caverna-da-recuperacao',
         title: 'A Caverna da Recuperação: O Quarto Ideal para Longevidade',
-        image: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&q=80&w=1200',
+        image: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&q=60&w=800',
         content: `
 ## Introdução: O Santuário do Reparo Profundo
 
@@ -764,7 +764,7 @@ Comece hoje: carregue as compras do mercado com consciência, agache-se enquanto
       {
         slug: 'o-poder-do-silencio-na-era-digital',
         title: 'O Poder do Silêncio: Blindagem Mental na Era da Hiperestimulação',
-        image: 'https://images.unsplash.com/photo-1499209974431-9dac3eb1401a?auto=format&fit=crop&q=80&w=1200',
+        image: 'https://images.unsplash.com/photo-1499209974431-9dac3eb1401a?auto=format&fit=crop&q=60&w=800',
         content: `
 ## Introdução: O Resgate do Espaço Sagrado Entre os Pensamentos
 
@@ -880,7 +880,7 @@ Ao adotar o Protocolo de Bama e respeitar a escuridão e o frio, você sentirá 
       {
         slug: 'higiene-circadiana-e-sincronia-da-luz',
         title: 'Higiene Circadiana: Como Sincronizar sua Biologia com a Luz Solar',
-        image: 'https://images.unsplash.com/photo-1470252649358-96957c053e9a?auto=format&fit=crop&q=80&w=1200',
+        image: 'https://images.unsplash.com/photo-1470252649358-96957c053e9a?auto=format&fit=crop&q=60&w=800',
         content: `
 ## Introdução: O Ritmo Esquecido da Vida
 
